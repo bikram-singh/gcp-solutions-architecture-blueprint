@@ -1,0 +1,579 @@
+﻿
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # google_folder.environment["non-prod"] will be created
+  + resource "google_folder" "environment" {
+      + create_time     = (known after apply)
+      + display_name    = "non-prod"
+      + folder_id       = (known after apply)
+      + id              = (known after apply)
+      + lifecycle_state = (known after apply)
+      + name            = (known after apply)
+      + parent          = "organizations/<ORG_ID>"
+    }
+
+  # google_folder.environment["prod"] will be created
+  + resource "google_folder" "environment" {
+      + create_time     = (known after apply)
+      + display_name    = "prod"
+      + folder_id       = (known after apply)
+      + id              = (known after apply)
+      + lifecycle_state = (known after apply)
+      + name            = (known after apply)
+      + parent          = "organizations/<ORG_ID>"
+    }
+
+  # google_folder.region["non-prod-eu"] will be created
+  + resource "google_folder" "region" {
+      + create_time     = (known after apply)
+      + display_name    = "eu"
+      + folder_id       = (known after apply)
+      + id              = (known after apply)
+      + lifecycle_state = (known after apply)
+      + name            = (known after apply)
+      + parent          = (known after apply)
+    }
+
+  # google_folder.region["non-prod-us"] will be created
+  + resource "google_folder" "region" {
+      + create_time     = (known after apply)
+      + display_name    = "us"
+      + folder_id       = (known after apply)
+      + id              = (known after apply)
+      + lifecycle_state = (known after apply)
+      + name            = (known after apply)
+      + parent          = (known after apply)
+    }
+
+  # google_folder.region["prod-eu"] will be created
+  + resource "google_folder" "region" {
+      + create_time     = (known after apply)
+      + display_name    = "eu"
+      + folder_id       = (known after apply)
+      + id              = (known after apply)
+      + lifecycle_state = (known after apply)
+      + name            = (known after apply)
+      + parent          = (known after apply)
+    }
+
+  # google_folder.region["prod-us"] will be created
+  + resource "google_folder" "region" {
+      + create_time     = (known after apply)
+      + display_name    = "us"
+      + folder_id       = (known after apply)
+      + id              = (known after apply)
+      + lifecycle_state = (known after apply)
+      + name            = (known after apply)
+      + parent          = (known after apply)
+    }
+
+  # google_folder.shared_services will be created
+  + resource "google_folder" "shared_services" {
+      + create_time     = (known after apply)
+      + display_name    = "shared-services"
+      + folder_id       = (known after apply)
+      + id              = (known after apply)
+      + lifecycle_state = (known after apply)
+      + name            = (known after apply)
+      + parent          = "organizations/<ORG_ID>"
+    }
+
+  # google_org_policy_policy.resource_location["non-prod-eu"] will be created
+  + resource "google_org_policy_policy" "resource_location" {
+      + etag   = (known after apply)
+      + id     = (known after apply)
+      + name   = (known after apply)
+      + parent = (known after apply)
+
+      + spec {
+          + etag        = (known after apply)
+          + update_time = (known after apply)
+
+          + rules {
+              + values {
+                  + allowed_values = [
+                      + "in:eu-locations",
+                    ]
+                }
+            }
+        }
+    }
+
+  # google_org_policy_policy.resource_location["non-prod-us"] will be created
+  + resource "google_org_policy_policy" "resource_location" {
+      + etag   = (known after apply)
+      + id     = (known after apply)
+      + name   = (known after apply)
+      + parent = (known after apply)
+
+      + spec {
+          + etag        = (known after apply)
+          + update_time = (known after apply)
+
+          + rules {
+              + values {
+                  + allowed_values = [
+                      + "in:us-locations",
+                    ]
+                }
+            }
+        }
+    }
+
+  # google_org_policy_policy.resource_location["prod-eu"] will be created
+  + resource "google_org_policy_policy" "resource_location" {
+      + etag   = (known after apply)
+      + id     = (known after apply)
+      + name   = (known after apply)
+      + parent = (known after apply)
+
+      + spec {
+          + etag        = (known after apply)
+          + update_time = (known after apply)
+
+          + rules {
+              + values {
+                  + allowed_values = [
+                      + "in:eu-locations",
+                    ]
+                }
+            }
+        }
+    }
+
+  # google_org_policy_policy.resource_location["prod-us"] will be created
+  + resource "google_org_policy_policy" "resource_location" {
+      + etag   = (known after apply)
+      + id     = (known after apply)
+      + name   = (known after apply)
+      + parent = (known after apply)
+
+      + spec {
+          + etag        = (known after apply)
+          + update_time = (known after apply)
+
+          + rules {
+              + values {
+                  + allowed_values = [
+                      + "in:us-locations",
+                    ]
+                }
+            }
+        }
+    }
+
+  # google_project.service["non-prod-eu-api"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "eu"
+          + "service"     = "api"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "non-prod"
+          + "region"      = "eu"
+          + "service"     = "api"
+        }
+      + name                = "medsecure-eu-api"
+      + number              = (known after apply)
+      + project_id          = "medsecure-eu-api-non-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "eu"
+          + "service"     = "api"
+        }
+    }
+
+  # google_project.service["non-prod-eu-data"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "eu"
+          + "service"     = "data"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "non-prod"
+          + "region"      = "eu"
+          + "service"     = "data"
+        }
+      + name                = "medsecure-eu-data"
+      + number              = (known after apply)
+      + project_id          = "medsecure-eu-data-non-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "eu"
+          + "service"     = "data"
+        }
+    }
+
+  # google_project.service["non-prod-eu-ml"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "eu"
+          + "service"     = "ml"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "non-prod"
+          + "region"      = "eu"
+          + "service"     = "ml"
+        }
+      + name                = "medsecure-eu-ml"
+      + number              = (known after apply)
+      + project_id          = "medsecure-eu-ml-non-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "eu"
+          + "service"     = "ml"
+        }
+    }
+
+  # google_project.service["non-prod-us-api"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "us"
+          + "service"     = "api"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "non-prod"
+          + "region"      = "us"
+          + "service"     = "api"
+        }
+      + name                = "medsecure-us-api"
+      + number              = (known after apply)
+      + project_id          = "medsecure-us-api-non-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "us"
+          + "service"     = "api"
+        }
+    }
+
+  # google_project.service["non-prod-us-data"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "us"
+          + "service"     = "data"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "non-prod"
+          + "region"      = "us"
+          + "service"     = "data"
+        }
+      + name                = "medsecure-us-data"
+      + number              = (known after apply)
+      + project_id          = "medsecure-us-data-non-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "us"
+          + "service"     = "data"
+        }
+    }
+
+  # google_project.service["non-prod-us-ml"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "us"
+          + "service"     = "ml"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "non-prod"
+          + "region"      = "us"
+          + "service"     = "ml"
+        }
+      + name                = "medsecure-us-ml"
+      + number              = (known after apply)
+      + project_id          = "medsecure-us-ml-non-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "non-prod"
+          + "region"      = "us"
+          + "service"     = "ml"
+        }
+    }
+
+  # google_project.service["prod-eu-api"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "prod"
+          + "region"      = "eu"
+          + "service"     = "api"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "prod"
+          + "region"      = "eu"
+          + "service"     = "api"
+        }
+      + name                = "medsecure-eu-api"
+      + number              = (known after apply)
+      + project_id          = "medsecure-eu-api-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "prod"
+          + "region"      = "eu"
+          + "service"     = "api"
+        }
+    }
+
+  # google_project.service["prod-eu-data"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "prod"
+          + "region"      = "eu"
+          + "service"     = "data"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "prod"
+          + "region"      = "eu"
+          + "service"     = "data"
+        }
+      + name                = "medsecure-eu-data"
+      + number              = (known after apply)
+      + project_id          = "medsecure-eu-data-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "prod"
+          + "region"      = "eu"
+          + "service"     = "data"
+        }
+    }
+
+  # google_project.service["prod-eu-ml"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "prod"
+          + "region"      = "eu"
+          + "service"     = "ml"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "prod"
+          + "region"      = "eu"
+          + "service"     = "ml"
+        }
+      + name                = "medsecure-eu-ml"
+      + number              = (known after apply)
+      + project_id          = "medsecure-eu-ml-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "prod"
+          + "region"      = "eu"
+          + "service"     = "ml"
+        }
+    }
+
+  # google_project.service["prod-us-api"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "prod"
+          + "region"      = "us"
+          + "service"     = "api"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "prod"
+          + "region"      = "us"
+          + "service"     = "api"
+        }
+      + name                = "medsecure-us-api"
+      + number              = (known after apply)
+      + project_id          = "medsecure-us-api-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "prod"
+          + "region"      = "us"
+          + "service"     = "api"
+        }
+    }
+
+  # google_project.service["prod-us-data"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "prod"
+          + "region"      = "us"
+          + "service"     = "data"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "prod"
+          + "region"      = "us"
+          + "service"     = "data"
+        }
+      + name                = "medsecure-us-data"
+      + number              = (known after apply)
+      + project_id          = "medsecure-us-data-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "prod"
+          + "region"      = "us"
+          + "service"     = "data"
+        }
+    }
+
+  # google_project.service["prod-us-ml"] will be created
+  + resource "google_project" "service" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "environment" = "prod"
+          + "region"      = "us"
+          + "service"     = "ml"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "environment" = "prod"
+          + "region"      = "us"
+          + "service"     = "ml"
+        }
+      + name                = "medsecure-us-ml"
+      + number              = (known after apply)
+      + project_id          = "medsecure-us-ml-prod"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "environment" = "prod"
+          + "region"      = "us"
+          + "service"     = "ml"
+        }
+    }
+
+  # google_project.shared_services["logging"] will be created
+  + resource "google_project" "shared_services" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "scope" = "shared-services"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "scope" = "shared-services"
+        }
+      + name                = "medsecure-logging"
+      + number              = (known after apply)
+      + project_id          = "medsecure-logging"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "scope" = "shared-services"
+        }
+    }
+
+  # google_project.shared_services["network-hub"] will be created
+  + resource "google_project" "shared_services" {
+      + auto_create_network = true
+      + billing_account     = "<BILLING_ACCOUNT_ID>"
+      + deletion_policy     = "DELETE"
+      + effective_labels    = {
+          + "scope" = "shared-services"
+        }
+      + folder_id           = (known after apply)
+      + id                  = (known after apply)
+      + labels              = {
+          + "scope" = "shared-services"
+        }
+      + name                = "medsecure-network-hub"
+      + number              = (known after apply)
+      + project_id          = "medsecure-network-hub"
+      + skip_delete         = (known after apply)
+      + terraform_labels    = {
+          + "scope" = "shared-services"
+        }
+    }
+
+Plan: 25 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + environment_folder_ids      = {
+      + non-prod = (known after apply)
+      + prod     = (known after apply)
+    }
+  + region_folder_ids           = {
+      + non-prod-eu = (known after apply)
+      + non-prod-us = (known after apply)
+      + prod-eu     = (known after apply)
+      + prod-us     = (known after apply)
+    }
+  + service_project_ids         = {
+      + non-prod-eu-api  = "medsecure-eu-api-non-prod"
+      + non-prod-eu-data = "medsecure-eu-data-non-prod"
+      + non-prod-eu-ml   = "medsecure-eu-ml-non-prod"
+      + non-prod-us-api  = "medsecure-us-api-non-prod"
+      + non-prod-us-data = "medsecure-us-data-non-prod"
+      + non-prod-us-ml   = "medsecure-us-ml-non-prod"
+      + prod-eu-api      = "medsecure-eu-api-prod"
+      + prod-eu-data     = "medsecure-eu-data-prod"
+      + prod-eu-ml       = "medsecure-eu-ml-prod"
+      + prod-us-api      = "medsecure-us-api-prod"
+      + prod-us-data     = "medsecure-us-data-prod"
+      + prod-us-ml       = "medsecure-us-ml-prod"
+    }
+  + shared_services_project_ids = {
+      + logging     = "medsecure-logging"
+      + network-hub = "medsecure-network-hub"
+    }
