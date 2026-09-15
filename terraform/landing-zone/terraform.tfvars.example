@@ -1,0 +1,13 @@
+org_id          = "123456789012"
+billing_account = "AAAAAA-BBBBBB-CCCCCC"
+
+environments = ["prod", "non-prod"]
+
+regions = {
+  eu = { resource_location_group = "eu-locations" }
+  us = { resource_location_group = "us-locations" }
+}
+
+services_per_region      = ["api", "data", "ml"]
+project_prefix            = "medsecure"
+shared_services_projects  = ["network-hub", "logging"]
