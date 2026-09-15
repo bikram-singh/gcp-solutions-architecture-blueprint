@@ -1,0 +1,87 @@
+<svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <style>
+    .hub { fill: #6a1b9a; }
+    .vpc-eu { fill: #00695c; }
+    .vpc-us { fill: #37474f; }
+    .project { fill: #ffffff; stroke: #90a4ae; stroke-width: 1.5; }
+    .armor { fill: #b71c1c; }
+    .box-text { fill: #ffffff; font-size: 13px; font-weight: 600; }
+    .project-text { fill: #263238; font-size: 11px; }
+    .label { fill: #607d8b; font-size: 10px; font-style: italic; }
+    .line { stroke: #b0bec5; stroke-width: 1.5; fill: none; }
+    .spoke-line { stroke: #6a1b9a; stroke-width: 2; fill: none; stroke-dasharray: 5,3; }
+  </style>
+
+  <!-- Internet / partner clinics -->
+  <rect x="400" y="10" width="200" height="34" rx="6" fill="#455a64"/>
+  <text x="500" y="32" text-anchor="middle" class="box-text">Internet / Partner Clinics</text>
+
+  <!-- Global LB + Cloud Armor -->
+  <rect x="370" y="70" width="120" height="34" rx="6" class="armor"/>
+  <text x="430" y="92" text-anchor="middle" class="box-text">Cloud Armor WAF</text>
+  <rect x="510" y="70" width="120" height="34" rx="6" fill="#01579b"/>
+  <text x="570" y="92" text-anchor="middle" class="box-text">Global HTTPS LB</text>
+  <line class="line" x1="500" y1="44" x2="430" y2="70"/>
+  <line class="line" x1="500" y1="44" x2="570" y2="70"/>
+  <line class="line" x1="490" y1="87" x2="510" y2="87"/>
+
+  <!-- Cloud Interconnect / VPN -->
+  <rect x="700" y="70" width="140" height="34" rx="6" fill="#455a64"/>
+  <text x="770" y="92" text-anchor="middle" class="box-text">Interconnect (+VPN failover)</text>
+
+  <!-- NCC Hub -->
+  <rect x="420" y="150" width="160" height="40" rx="6" class="hub"/>
+  <text x="500" y="175" text-anchor="middle" class="box-text">NCC Hub (shared-services)</text>
+  <line class="line" x1="570" y1="104" x2="500" y2="150"/>
+  <line class="line" x1="770" y1="104" x2="500" y2="150"/>
+
+  <!-- Spoke lines to region VPCs -->
+  <line class="spoke-line" x1="500" y1="190" x2="230" y2="250"/>
+  <line class="spoke-line" x1="500" y1="190" x2="770" y2="250"/>
+  <text x="360" y="215" text-anchor="middle" class="label">spoke</text>
+  <text x="640" y="215" text-anchor="middle" class="label">spoke</text>
+
+  <!-- prod-eu Shared VPC -->
+  <rect x="100" y="250" width="260" height="34" rx="6" class="vpc-eu"/>
+  <text x="230" y="272" text-anchor="middle" class="box-text">Shared VPC: prod-eu (10.10.0.0/20)</text>
+
+  <!-- prod-us Shared VPC -->
+  <rect x="640" y="250" width="260" height="34" rx="6" class="vpc-us"/>
+  <text x="770" y="272" text-anchor="middle" class="box-text">Shared VPC: prod-us (10.20.0.0/20)</text>
+
+  <!-- eu service projects -->
+  <rect x="60" y="320" width="105" height="28" rx="4" class="project"/>
+  <text x="112" y="338" text-anchor="middle" class="project-text">eu-api (svc project)</text>
+  <rect x="175" y="320" width="105" height="28" rx="4" class="project"/>
+  <text x="227" y="338" text-anchor="middle" class="project-text">eu-data (svc project)</text>
+  <rect x="290" y="320" width="105" height="28" rx="4" class="project"/>
+  <text x="342" y="338" text-anchor="middle" class="project-text">eu-ml (svc project)</text>
+  <line class="line" x1="230" y1="284" x2="230" y2="320"/>
+
+  <!-- us service projects -->
+  <rect x="600" y="320" width="105" height="28" rx="4" class="project"/>
+  <text x="652" y="338" text-anchor="middle" class="project-text">us-api (svc project)</text>
+  <rect x="715" y="320" width="105" height="28" rx="4" class="project"/>
+  <text x="767" y="338" text-anchor="middle" class="project-text">us-data (svc project)</text>
+  <rect x="830" y="320" width="105" height="28" rx="4" class="project"/>
+  <text x="882" y="338" text-anchor="middle" class="project-text">us-ml (svc project)</text>
+  <line class="line" x1="770" y1="284" x2="770" y2="320"/>
+
+  <text x="230" y="380" text-anchor="middle" class="label">Residency boundary: eu service projects can only</text>
+  <text x="230" y="394" text-anchor="middle" class="label">attach to the prod-eu Shared VPC host</text>
+
+  <text x="770" y="380" text-anchor="middle" class="label">Residency boundary: us service projects can only</text>
+  <text x="770" y="394" text-anchor="middle" class="label">attach to the prod-us Shared VPC host</text>
+
+  <!-- Key -->
+  <rect x="80" y="450" width="14" height="14" class="hub"/>
+  <text x="100" y="461" class="project-text">NCC Hub — routing/metadata only, no workload traffic</text>
+
+  <rect x="80" y="475" width="14" height="14" class="armor"/>
+  <text x="100" y="486" class="project-text">Cloud Armor — adaptive DDoS + per-IP rate limiting, engages automatically</text>
+
+  <line x1="80" y1="503" x2="105" y2="503" class="spoke-line"/>
+  <text x="115" y="507" class="project-text">NCC spoke attachment — solves peering's non-transitive routing problem</text>
+
+  <text x="500" y="560" text-anchor="middle" font-size="12" fill="#455a64">ADR-002: Network Architecture — Hub-and-Spoke via NCC, Shared VPC per Region</text>
+</svg>

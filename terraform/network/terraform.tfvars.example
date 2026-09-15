@@ -1,0 +1,22 @@
+hub_project_id = "medsecure-network-hub"
+
+region_networks = {
+  prod-eu = {
+    host_project_id = "medsecure-eu-network-prod"
+    region           = "europe-west1"
+    subnet_cidr      = "10.10.0.0/20"
+  }
+  prod-us = {
+    host_project_id = "medsecure-us-network-prod"
+    region           = "us-central1"
+    subnet_cidr      = "10.20.0.0/20"
+  }
+}
+
+service_projects_by_spoke = {
+  prod-eu = ["medsecure-eu-api-prod", "medsecure-eu-data-prod", "medsecure-eu-ml-prod"]
+  prod-us = ["medsecure-us-api-prod", "medsecure-us-data-prod", "medsecure-us-ml-prod"]
+}
+
+enable_cloud_armor              = true
+rate_limit_threshold_per_minute = 3000
