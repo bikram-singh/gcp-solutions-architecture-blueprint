@@ -1,4 +1,4 @@
-# GCP Solutions Architecture Blueprint
+﻿# GCP Solutions Architecture Blueprint
 
 **MedSecure** — a reference architecture for a multi-region healthcare SaaS platform on Google Cloud, built to demonstrate solutions-architecture-level decision-making, not just infrastructure delivery.
 
@@ -40,7 +40,7 @@ Structured around Google's six **Well-Architected Framework** pillars — see [`
 
 | # | Pillar | Status |
 |---|---|---|
-| 1 | [Landing Zone & Resource Hierarchy](docs/adr/ADR-001-landing-zone.md) | 🟡 In progress |
+| 1 | [Landing Zone & Resource Hierarchy](docs/adr/ADR-001-landing-zone.md) | ✅ Done |
 | 2 | [Network Architecture](docs/adr/ADR-002-network.md) | ⬜ Planned |
 | 3 | [Compute & Modernization](docs/adr/ADR-003-compute.md) | ⬜ Planned |
 | 4 | [Data & Analytics](docs/adr/ADR-004-data.md) | ⬜ Planned |
@@ -93,3 +93,4 @@ This project builds directly on prior hands-on work, published separately:
 ## Status
 
 🚧 Active build — following an 8-week phased roadmap (landing zone → network → security perimeter → compute/data → AI/ML → reliability/DR → cost → documentation). Progress tracked via the pillar table above.
+
