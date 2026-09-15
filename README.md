@@ -1,0 +1,1 @@
+# gcp-solutions-architecture-blueprint
