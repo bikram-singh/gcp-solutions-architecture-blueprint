@@ -1,0 +1,69 @@
+<svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <style>
+    .device { fill: #455a64; }
+    .pubsub { fill: #f9a825; }
+    .dataflow { fill: #0277bd; }
+    .bq { fill: #1565c0; }
+    .sql { fill: #2e7d32; }
+    .replica { fill: #66bb6a; }
+    .dataplex { fill: #6a1b9a; }
+    .box-text { fill: #ffffff; font-size: 12px; font-weight: 600; }
+    .label { fill: #607d8b; font-size: 10px; font-style: italic; }
+    .arrow { stroke: #90a4ae; stroke-width: 1.8; fill: none; marker-end: url(#arrowhead2); }
+  </style>
+  <defs>
+    <marker id="arrowhead2" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#90a4ae"/>
+    </marker>
+  </defs>
+
+  <!-- Streaming path -->
+  <rect x="30" y="40" width="140" height="36" rx="6" class="device"/>
+  <text x="100" y="62" text-anchor="middle" class="box-text">Wearable Devices</text>
+
+  <rect x="220" y="40" width="120" height="36" rx="6" class="pubsub"/>
+  <text x="280" y="62" text-anchor="middle" class="box-text">Pub/Sub</text>
+  <line class="arrow" x1="170" y1="58" x2="220" y2="58"/>
+
+  <rect x="390" y="40" width="140" height="36" rx="6" class="dataflow"/>
+  <text x="460" y="62" text-anchor="middle" class="box-text">Dataflow</text>
+  <line class="arrow" x1="340" y1="58" x2="390" y2="58"/>
+  <text x="460" y="92" text-anchor="middle" class="label">(reused from the streaming telemetry pipeline project)</text>
+
+  <rect x="580" y="40" width="150" height="36" rx="6" class="bq"/>
+  <text x="655" y="62" text-anchor="middle" class="box-text">BigQuery</text>
+  <line class="arrow" x1="530" y1="58" x2="580" y2="58"/>
+
+  <!-- Dataplex governance -->
+  <rect x="580" y="120" width="150" height="36" rx="6" class="dataplex"/>
+  <text x="655" y="142" text-anchor="middle" class="box-text">Dataplex</text>
+  <text x="655" y="170" text-anchor="middle" class="label">catalog + PII policy tags</text>
+  <line class="arrow" x1="655" y1="76" x2="655" y2="120"/>
+
+  <!-- OLTP path -->
+  <rect x="30" y="240" width="180" height="36" rx="6" fill="#01579b"/>
+  <text x="120" y="262" text-anchor="middle" class="box-text">Clinic Portal / API</text>
+
+  <rect x="280" y="240" width="180" height="36" rx="6" class="sql"/>
+  <text x="370" y="262" text-anchor="middle" class="box-text">Cloud SQL (primary)</text>
+  <line class="arrow" x1="210" y1="258" x2="280" y2="258"/>
+  <text x="370" y="290" text-anchor="middle" class="label">Regional HA + point-in-time recovery</text>
+
+  <rect x="280" y="320" width="180" height="34" rx="6" class="replica" opacity="0.85"/>
+  <text x="370" y="341" text-anchor="middle" class="box-text">Read replica (same region)</text>
+  <line class="arrow" x1="370" y1="276" x2="370" y2="320"/>
+
+  <rect x="520" y="320" width="200" height="34" rx="6" class="replica"/>
+  <text x="620" y="341" text-anchor="middle" class="box-text">DR replica (cross-region)</text>
+  <line class="arrow" x1="460" y1="258" x2="620" y2="320"/>
+  <text x="620" y="368" text-anchor="middle" class="label">Failover target — meets RPO ≤15min, RTO ≤1hr</text>
+  <text x="620" y="382" text-anchor="middle" class="label">Same residency zone only (eu→eu, us→us)</text>
+
+  <!-- Residency note -->
+  <rect x="30" y="440" width="700" height="60" rx="6" fill="#eceff1" stroke="#b0bec5"/>
+  <text x="50" y="462" class="label" font-size="11">Every box above is instantiated once per region (eu / us). No dataset, topic, or</text>
+  <text x="50" y="478" class="label" font-size="11">instance crosses the residency boundary established in ADR-001 — enforced by the</text>
+  <text x="50" y="494" class="label" font-size="11">same gcp.resourceLocations constraint each region folder already carries.</text>
+
+  <text x="500" y="540" text-anchor="middle" font-size="12" fill="#455a64">ADR-004: Data &amp; Analytics — Cloud SQL (OLTP) + Pub/Sub → Dataflow → BigQuery (streaming analytics), governed by Dataplex</text>
+</svg>

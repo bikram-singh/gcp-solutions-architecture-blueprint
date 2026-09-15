@@ -1,0 +1,12 @@
+regions = {
+  prod-eu = { data_project_id = "medsecure-eu-data-prod", region = "europe-west1" }
+  prod-us = { data_project_id = "medsecure-us-data-prod", region = "us-central1" }
+}
+
+# DR replica regions -- always same-residency-zone pairings, never eu-to-us.
+cross_region_replica_map = {
+  prod-eu = "europe-west4"
+  prod-us = "us-east1"
+}
+
+cloud_sql_tier = "db-custom-4-16384"
