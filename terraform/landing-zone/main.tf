@@ -95,3 +95,9 @@ resource "google_project" "service" {
     service     = each.value.service
   }
 }
+
+provider "google" {
+  project                = "gcphub-dev"
+  user_project_override  = true
+  billing_project         = "gcphub-dev"
+}
