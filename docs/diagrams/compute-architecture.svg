@@ -1,0 +1,61 @@
+<svg viewBox="0 0 1000 640" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <style>
+    .legacy { fill: #6d4c41; }
+    .gke { fill: #01579b; }
+    .run { fill: #2e7d32; }
+    .box-text { fill: #ffffff; font-size: 13px; font-weight: 600; }
+    .pod-text { fill: #263238; font-size: 11px; }
+    .pod { fill: #e3f2fd; stroke: #01579b; stroke-width: 1.2; }
+    .fn { fill: #e8f5e9; stroke: #2e7d32; stroke-width: 1.2; }
+    .label { fill: #607d8b; font-size: 10px; font-style: italic; }
+    .arrow { stroke: #90a4ae; stroke-width: 1.8; fill: none; marker-end: url(#arrowhead); }
+  </style>
+  <defs>
+    <marker id="arrowhead" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#90a4ae"/>
+    </marker>
+  </defs>
+
+  <!-- Legacy monolith -->
+  <rect x="60" y="40" width="200" height="50" rx="6" class="legacy"/>
+  <text x="160" y="62" text-anchor="middle" class="box-text">On-Prem Monolith</text>
+  <text x="160" y="80" text-anchor="middle" class="box-text" font-size="11">(legacy MedSecure)</text>
+
+  <!-- 6 R's mapping -->
+  <text x="60" y="115" class="label">Replatform: core API/backend →</text>
+  <text x="60" y="128" class="label">Refactor: webhook/notifications →</text>
+  <text x="60" y="141" class="label">Retire: legacy batch reports</text>
+  <text x="60" y="154" class="label">Retain (for now): compliance archives</text>
+
+  <line class="arrow" x1="260" y1="65" x2="420" y2="150"/>
+  <line class="arrow" x1="260" y1="75" x2="420" y2="330"/>
+
+  <!-- GKE Autopilot -->
+  <rect x="420" y="130" width="260" height="40" rx="6" class="gke"/>
+  <text x="550" y="155" text-anchor="middle" class="box-text">GKE Autopilot (per region)</text>
+
+  <rect x="440" y="185" width="100" height="30" rx="4" class="pod"/>
+  <text x="490" y="204" text-anchor="middle" class="pod-text">API pods</text>
+  <rect x="560" y="185" width="100" height="30" rx="4" class="pod"/>
+  <text x="610" y="204" text-anchor="middle" class="pod-text">Backend pods</text>
+  <text x="550" y="235" text-anchor="middle" class="label">HPA on queue-depth metric (not raw CPU)</text>
+
+  <!-- Cloud Run -->
+  <rect x="420" y="310" width="260" height="40" rx="6" class="run"/>
+  <text x="550" y="335" text-anchor="middle" class="box-text">Cloud Run (per region)</text>
+
+  <rect x="430" y="365" width="115" height="30" rx="4" class="fn"/>
+  <text x="487" y="384" text-anchor="middle" class="pod-text">Webhook ingestion</text>
+  <rect x="555" y="365" width="115" height="30" rx="4" class="fn"/>
+  <text x="612" y="384" text-anchor="middle" class="pod-text">Notification dispatch</text>
+  <text x="550" y="415" text-anchor="middle" class="label">min_instances = 0 (true scale-to-zero)</text>
+
+  <!-- Workload Identity -->
+  <rect x="770" y="220" width="180" height="60" rx="6" fill="#546e7a"/>
+  <text x="860" y="245" text-anchor="middle" class="box-text">Workload Identity</text>
+  <text x="860" y="262" text-anchor="middle" class="box-text" font-size="11">Federation (no SA keys)</text>
+  <line class="arrow" x1="680" y1="200" x2="770" y2="245"/>
+  <line class="arrow" x1="680" y1="380" x2="770" y2="255"/>
+
+  <text x="500" y="590" text-anchor="middle" font-size="12" fill="#455a64">ADR-003: Compute &amp; Modernization — GKE Autopilot (stateful API) + Cloud Run (event-driven), migrated via the 6 R's</text>
+</svg>

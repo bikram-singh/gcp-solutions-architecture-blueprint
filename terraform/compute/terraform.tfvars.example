@@ -1,0 +1,21 @@
+# Fill network/subnetwork from the network module's outputs:
+#   terraform output -state=../network/terraform.tfstate region_vpc_ids
+#   terraform output -state=../network/terraform.tfstate region_subnet_ids
+
+api_clusters = {
+  prod-eu = {
+    project_id = "medsecure-eu-api-prod"
+    region      = "europe-west1"
+    network      = "projects/medsecure-eu-network-prod/global/networks/medsecure-prod-eu-vpc"
+    subnetwork   = "projects/medsecure-eu-network-prod/regions/europe-west1/subnetworks/medsecure-prod-eu-subnet"
+  }
+  prod-us = {
+    project_id = "medsecure-us-api-prod"
+    region      = "us-central1"
+    network      = "projects/medsecure-us-network-prod/global/networks/medsecure-prod-us-vpc"
+    subnetwork   = "projects/medsecure-us-network-prod/regions/us-central1/subnetworks/medsecure-prod-us-subnet"
+  }
+}
+
+cloud_run_min_instances = 0
+cloud_run_max_instances = 50
