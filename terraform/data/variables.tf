@@ -24,3 +24,9 @@ variable "cloud_sql_tier" {
   type        = string
   default     = "db-custom-4-16384"
 }
+
+variable "authorized_ip_ranges" {
+  description = "TEMPORARY (see docs/known-deviations.md): authorized IPs for Cloud SQL public-IP access, pending the network module."
+  type        = map(string)
+  default     = {}
+}
