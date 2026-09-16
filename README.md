@@ -41,8 +41,8 @@ Structured around Google's six **Well-Architected Framework** pillars — see [`
 | # | Pillar | Status |
 |---|---|---|
 | 1 | [Landing Zone & Resource Hierarchy](docs/adr/ADR-001-landing-zone.md) | ✅ Done |
-| 2 | [Network Architecture](docs/adr/ADR-002-network.md) | ⬜ Planned |
-| 3 | [Compute & Modernization](docs/adr/ADR-003-compute.md) | ⬜ Planned |
+| 2 | [Network Architecture](docs/adr/ADR-002-network.md) | ✅ Done |
+| 3 | [Compute & Modernization](docs/adr/ADR-003-compute.md) | ✅ Done |
 | 4 | [Data & Analytics](docs/adr/ADR-004-data.md) | ✅ Done |
 | 5 | [AI/ML Layer](docs/adr/ADR-005-ai-ml.md) | ✅ Done |
 | 6 | [Security & Compliance](docs/adr/ADR-006-security.md) | ✅ Done |
@@ -93,6 +93,7 @@ This project builds directly on prior hands-on work, published separately:
 ## Status
 
 🚧 Active build — following an 8-week phased roadmap (landing zone → network → security perimeter → compute/data → AI/ML → reliability/DR → cost → documentation). Progress tracked via the pillar table above.
+
 
 
 
