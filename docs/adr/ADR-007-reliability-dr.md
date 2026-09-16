@@ -6,7 +6,9 @@
 
 ---
 
-**Drill status: executed.** Real failover drill run 2026-09-16 against live infrastructure in `medsecure-eu-data-prod` — measured RTO ~3-4 min (target ≤60 min), measured RPO 0 for the tested write. Full results in `docs/dr-drill/failover-runbook.md`.\r\n\r\n## Context
+**Drill status: executed.** Real failover drill run 2026-09-16 against live infrastructure in `medsecure-eu-data-prod` — measured RTO ~3-4 min (target ≤60 min), measured RPO 0 for the tested write. Full results in `docs/dr-drill/failover-runbook.md`.
+
+## Context
 
 ADR-004 already provisioned a cross-region Cloud SQL replica, marked as a failover target, for exactly this purpose â€” but a replica that's never been tested is a hope, not a DR strategy. This pillar's job is to turn that infrastructure into an actual, defined, testable plan: what triggers failover, who executes it, what "recovered" means precisely, and â€” critically â€” a real drill with real numbers, not just a design on paper.
 
@@ -82,4 +84,5 @@ DR Replica: medsecure-eu-sql-dr-replica (europe-west4, failover_target=true)
 - ADR-010 (Observability): the Cloud Monitoring alert that triggers step 1 of the runbook is a concrete SLO/alerting requirement this pillar hands directly to Observability
 
 **Revisit if:** a future business requirement tightens RTO below what active-passive can realistically deliver â€” at that point, Option A's active-active complexity becomes justified by the requirement itself, not adopted preemptively.
+
 
