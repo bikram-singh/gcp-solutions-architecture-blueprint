@@ -1,0 +1,8 @@
+regions = {
+  prod-eu = { project_id = "medsecure-eu-data-prod", primary_instance_id = "medsecure-prod-eu-sql" }
+  prod-us = { project_id = "medsecure-us-data-prod", primary_instance_id = "medsecure-prod-us-sql" }
+}
+
+notification_email = "oncall@medsecure.example"
+
+consecutive_failures_before_alert = 3
