@@ -1,4 +1,4 @@
-terraform {
+﻿terraform {
   required_version = ">= 1.7.0"
   required_providers {
     google = {
@@ -57,10 +57,11 @@ resource "google_kms_crypto_key" "region_key" {
 }
 
 # --- Security Command Center Premium: org-level, covers every project ------
-resource "google_scc_v2_organization_scc_big_query_export" "medsecure_scc_export" {
+resource "google_scc_v2_organization_scc_big_query_exports" "medsecure_scc_export" {
   organization = var.org_id
   location     = "global"
   big_query_export_id = "medsecure-scc-findings"
   description  = "SCC Premium findings exported for centralized review, feeding the same logging project as Cloud Audit Logs."
   dataset      = "projects/medsecure-logging/datasets/scc_findings" # dataset created in the data module's logging project
 }
+
