@@ -1,0 +1,70 @@
+name: Terraform Apply (main)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'terraform/**'
+
+jobs:
+  detect-changed-modules:
+    runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.detect.outputs.modules }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect which terraform/<module> directories changed
+        id: detect
+        run: |
+          CHANGED=$(git diff --name-only HEAD~1...HEAD \
+            | grep '^terraform/' \
+            | cut -d/ -f2 \
+            | sort -u \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "modules=$CHANGED" >> "$GITHUB_OUTPUT"
+
+  # Non-prod: auto-apply, per ADR-009 -- non-prod is disposable, so the
+  # manual gate that guards prod would only add friction with no
+  # corresponding safety benefit here.
+  apply-non-prod:
+    needs: detect-changed-modules
+    if: needs.detect-changed-modules.outputs.modules != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: ${{ fromJson(needs.detect-changed-modules.outputs.modules) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.HCP_TERRAFORM_TOKEN }}
+      - working-directory: terraform/${{ matrix.module }}
+        run: |
+          terraform init
+          terraform apply -auto-approve -var-file=non-prod.tfvars
+
+  # Prod: requires manual approval via the GitHub Environment protection
+  # rule configured on "production" -- this is the direct, structural fix
+  # for the accidental-destroy incident that occurred during this
+  # project's manual apply process (see ADR-009's decision rationale).
+  # DO NOT remove the environment gate below to "speed up" deploys --
+  # that gate is the point of this pillar, not friction to optimize away.
+  apply-prod:
+    needs: [detect-changed-modules, apply-non-prod]
+    if: needs.detect-changed-modules.outputs.modules != '[]'
+    runs-on: ubuntu-latest
+    environment: production  # <- requires a human reviewer to approve
+    strategy:
+      matrix:
+        module: ${{ fromJson(needs.detect-changed-modules.outputs.modules) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.HCP_TERRAFORM_TOKEN }}
+      - working-directory: terraform/${{ matrix.module }}
+        run: |
+          terraform init
+          terraform apply -auto-approve -var-file=prod.tfvars

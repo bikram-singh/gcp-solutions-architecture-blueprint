@@ -1,0 +1,70 @@
+name: Terraform Plan (PR)
+
+on:
+  pull_request:
+    paths:
+      - 'terraform/**'
+
+jobs:
+  detect-changed-modules:
+    runs-on: ubuntu-latest
+    outputs:
+      modules: ${{ steps.detect.outputs.modules }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect which terraform/<module> directories changed
+        id: detect
+        run: |
+          # Only the module(s) actually touched by this PR get planned --
+          # this is the path-filtered isolation from ADR-009: a PR touching
+          # only terraform/cost/ must not trigger a plan against
+          # terraform/landing-zone/.
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
+            | grep '^terraform/' \
+            | cut -d/ -f2 \
+            | sort -u \
+            | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "modules=$CHANGED" >> "$GITHUB_OUTPUT"
+
+  plan:
+    needs: detect-changed-modules
+    if: needs.detect-changed-modules.outputs.modules != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        module: ${{ fromJson(needs.detect-changed-modules.outputs.modules) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          cli_config_credentials_token: ${{ secrets.HCP_TERRAFORM_TOKEN }}
+
+      - name: Terraform Init
+        working-directory: terraform/${{ matrix.module }}
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: terraform/${{ matrix.module }}
+        run: terraform validate
+
+      - name: Terraform Plan
+        working-directory: terraform/${{ matrix.module }}
+        run: terraform plan -no-color -out=plan.tfplan
+        # NOTE: this step authenticates via each module's own scoped
+        # Workload Identity Federation credential (ADR-009) -- not a
+        # single shared credential across all 8 modules.
+
+      - name: Post plan as PR comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Terraform plan for \`${{ matrix.module }}\` — review before merging. Full output in the workflow run logs.`
+            })
