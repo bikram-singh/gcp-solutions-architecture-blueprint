@@ -1,4 +1,4 @@
-terraform {
+﻿terraform {
   required_version = ">= 1.7.0"
   required_providers {
     google = {
@@ -21,6 +21,19 @@ resource "google_monitoring_service" "api_tier" {
   project      = each.value
   service_id   = "medsecure-${each.key}-api-tier"
   display_name = "MedSecure API Tier (${each.key})"
+
+  # NOTE: points at the webhook-ingestion Cloud Run service as a stand-in.
+  # ADR-003's actual API tier runs on GKE Autopilot, which was not
+  # successfully provisioned in this session (see known-deviations.md) --
+  # this SLO demonstrates the mechanism against the nearest real, live
+  # service rather than against infrastructure that does not yet exist.
+  basic_service {
+    service_type = "CLOUD_RUN"
+    service_labels = {
+      service_name = "webhook-ingestion"
+      location     = "europe-west1"
+    }
+  }
 }
 
 resource "google_monitoring_slo" "api_availability" {
@@ -96,10 +109,15 @@ resource "google_monitoring_dashboard" "platform_health_summary" {
   dashboard_json = jsonencode({
     displayName = "MedSecure Platform Health Summary (${each.key})"
     mosaicLayout = {
+      columns = 12
       tiles = [
         {
-          title = "API Availability SLO — error budget remaining"
+          xPos   = 0
+          yPos   = 0
+          width  = 6
+          height = 4
           widget = {
+            title = "API Availability SLO — error budget remaining"
             scorecard = {
               timeSeriesQuery = {
                 timeSeriesFilter = {
@@ -110,8 +128,12 @@ resource "google_monitoring_dashboard" "platform_health_summary" {
           }
         },
         {
-          title = "Note"
+          xPos   = 0
+          yPos   = 4
+          width  = 6
+          height = 4
           widget = {
+            title = "Note"
             text = {
               content = "This summary surfaces Pillar 7's DR trigger alert and Pillar 8's budget alert by reference -- see their respective dashboards for detail. This dashboard is the single-glance platform-health view described in ADR-010, not a replacement for the per-domain dashboards."
               format  = "MARKDOWN"
@@ -122,3 +144,8 @@ resource "google_monitoring_dashboard" "platform_health_summary" {
     }
   })
 }
+
+
+
+
+
