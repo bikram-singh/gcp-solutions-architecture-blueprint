@@ -26,3 +26,9 @@ terraform plan -out=observability.tfplan
 
 Not yet applied. The `select_slo_burn_rate()` and `select_slo_health()` MQL functions used in the alert policies and dashboard require the SLO to exist first within the same apply — if `terraform apply` errors on evaluation order, split this into two applies (SLO first, then the alerts/dashboard referencing it) rather than assuming a single apply will always resolve the dependency correctly.
 
+
+## Real-world corrections discovered during actual apply
+
+The original design underestimated the Cloud Monitoring dashboard JSON schema's strictness. Applying this module against a live API surfaced four separate required-field errors in sequence: `google_monitoring_service` needs an explicit `basic_service` block (not just a display name), dashboard tiles need `title` nested inside `widget` (not as a tile-level sibling), tiles need explicit `xPos`/`yPos`/`width`/`height`, and `mosaicLayout` itself needs a `columns` value. All four are now fixed in `main.tf`. This validates the README's original caution that the dashboard JSON is "better built and iterated on directly in the Cloud Monitoring console UI" -- the schema is real, strict, and under-documented in the Terraform provider examples.
+
+The SLO also targets the `webhook-ingestion` Cloud Run service as a stand-in for ADR-003's actual GKE Autopilot API tier, since GKE cluster creation was not completed in this session (status unconfirmed -- see known-deviations.md).
