@@ -1,0 +1,55 @@
+<svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <style>
+    .fixed { fill: #37474f; }
+    .variable { fill: #1565c0; }
+    .axis { stroke: #263238; stroke-width: 1.5; }
+    .gridline { stroke: #e0e0e0; stroke-width: 1; }
+    .label { fill: #607d8b; font-size: 11px; }
+    .title { fill: #263238; font-size: 13px; font-weight: 600; }
+    .curve { fill: none; stroke: #b71c1c; stroke-width: 2.5; }
+  </style>
+
+  <text x="500" y="30" text-anchor="middle" class="title">Illustrative: cost per 1,000 users falls as user count grows</text>
+  <text x="500" y="48" text-anchor="middle" class="label">Because fixed costs (DR replica, SCC Premium, regional HA) stay flat while only variable costs scale</text>
+
+  <!-- Bar chart: 1000 users -->
+  <text x="220" y="90" text-anchor="middle" class="title" font-size="12">At 1,000 users</text>
+  <rect x="150" y="110" width="140" height="200" class="fixed"/>
+  <text x="220" y="215" text-anchor="middle" fill="white" font-size="11" font-weight="600">Fixed</text>
+  <text x="220" y="230" text-anchor="middle" fill="white" font-size="10">$1,045/mo</text>
+  <rect x="150" y="310" width="140" height="60" class="variable"/>
+  <text x="220" y="345" text-anchor="middle" fill="white" font-size="11" font-weight="600">Variable</text>
+  <text x="220" y="358" text-anchor="middle" fill="white" font-size="10">$340/mo</text>
+  <text x="220" y="390" text-anchor="middle" class="label" font-weight="600">Total: $1,385/mo</text>
+  <text x="220" y="406" text-anchor="middle" class="label" font-weight="600">= $1,385 per 1,000 users</text>
+
+  <!-- Bar chart: 100000 users -->
+  <text x="500" y="90" text-anchor="middle" class="title" font-size="12">At 100,000 users</text>
+  <rect x="430" y="290" width="140" height="20" class="fixed"/>
+  <text x="500" y="304" text-anchor="middle" fill="white" font-size="9">Fixed: same $1,045</text>
+  <rect x="430" y="90" width="140" height="200" class="variable"/>
+  <text x="500" y="185" text-anchor="middle" fill="white" font-size="11" font-weight="600">Variable</text>
+  <text x="500" y="200" text-anchor="middle" fill="white" font-size="10">$7,740/mo</text>
+  <text x="500" y="390" text-anchor="middle" class="label" font-weight="600">Total: $8,785/mo</text>
+  <text x="500" y="406" text-anchor="middle" class="label" font-weight="600">= $88 per 1,000 users</text>
+
+  <!-- Comparison -->
+  <rect x="720" y="90" width="220" height="220" fill="#eceff1" stroke="#90a4ae"/>
+  <text x="830" y="115" text-anchor="middle" class="title" font-size="12">Cost per 1,000 users</text>
+  <line x1="740" y1="280" x2="920" y2="280" class="axis"/>
+  <line x1="740" y1="130" x2="740" y2="280" class="axis"/>
+  <text x="720" y="135" text-anchor="end" class="label" font-size="9">$1,400</text>
+  <text x="720" y="280" text-anchor="end" class="label" font-size="9">$0</text>
+  <path d="M 740 133 L 920 273" class="curve"/>
+  <circle cx="740" cy="133" r="4" fill="#b71c1c"/>
+  <circle cx="920" cy="273" r="4" fill="#b71c1c"/>
+  <text x="740" y="295" text-anchor="middle" class="label" font-size="9">1K users</text>
+  <text x="920" y="295" text-anchor="middle" class="label" font-size="9">100K users</text>
+
+  <!-- Note -->
+  <rect x="30" y="440" width="940" height="90" rx="6" fill="#fff3e0" stroke="#e65100" stroke-dasharray="4,3"/>
+  <text x="50" y="463" font-size="12" font-weight="600" fill="#e65100">These are illustrative figures, not quoted GCP prices</text>
+  <text x="50" y="486" font-size="11" fill="#263238">Full itemization with every ADR-linked line item is in cost-model/cost-model.csv. What matters here is the</text>
+  <text x="50" y="503" font-size="11" fill="#263238">shape of the curve — sub-linear because the DR replica, CMEK, and SCC Premium costs (ADR-006, ADR-007)</text>
+  <text x="50" y="520" font-size="11" fill="#263238">are fixed investments, not because those costs are small — they're real and named, not hidden.</text>
+</svg>

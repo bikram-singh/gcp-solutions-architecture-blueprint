@@ -1,0 +1,14 @@
+Cost Category,Scaling Behavior,Driving ADR,Illustrative Monthly Cost @ 1000 Users (USD),Illustrative Monthly Cost @ 100000 Users (USD),Notes
+GKE Autopilot (API/backend) x2 regions,Variable - scales with request volume,ADR-003,180,4500,Per-pod billing; HPA on queue-depth metric
+Cloud Run (webhook ingestion) x2 regions,Variable - scale-to-zero,"ADR-003, ADR-005",5,120,Near-zero outside active triggers
+Cloud Run (notification dispatch) x2 regions,Variable - scale-to-zero,"ADR-003, ADR-005",5,110,Near-zero outside active triggers
+Cloud SQL primary (regional HA) x2 regions,Fixed - does not grow with users until tier upgrade,ADR-004,320,320,"Upgrade threshold not yet reached at either user count in this model"
+Cloud SQL DR replica x2 regions,"Fixed, idle in steady state",ADR-007,220,220,Pure cost -- no throughput benefit day-to-day; the direct price of the RTO/RPO guarantee
+BigQuery (on-demand queries),Variable - scales with query volume,ADR-004,40,900,Would shift to slot reservation (fixed) if volume grew enough to justify it
+Cloud KMS / CMEK,Near-fixed,ADR-006,15,25,Key management overhead dominates over per-operation cost
+Security Command Center Premium,Fixed - priced per-org,ADR-006,450,450,Does not scale with users at all -- flat regardless of platform size
+Vertex AI (ADK agent + anomaly model) x2 regions,Variable - scales with query volume,ADR-005,60,1800,Agent query volume tracks clinician usage, not patient count directly
+Cloud Armor (WAF/rate limiting),Near-fixed + per-request,ADR-002,50,300,Base policy cost is fixed; incremental cost from request volume is small
+NCC hub + Shared VPC networking,Fixed,ADR-002,40,40,Does not scale with users
+TOTAL (illustrative),,,"1385","8785",
+Cost per 1000 users (illustrative),,,"1385","88",Sub-linear: fixed-cost rows are unchanged while user count grew 100x

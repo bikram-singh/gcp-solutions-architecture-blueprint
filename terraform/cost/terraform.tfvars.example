@@ -1,0 +1,7 @@
+billing_account_id = "REPLACE_WITH_REAL_BILLING_ACCOUNT_ID"
+org_id              = "REPLACE_WITH_REAL_ORG_ID"
+
+monthly_budget_amount_usd = 2000
+alert_thresholds_percent   = [50, 80, 100, 120]
+
+notification_email = "finops@medsecure.example"
