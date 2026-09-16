@@ -1,0 +1,25 @@
+org_id = "REPLACE_WITH_REAL_ORG_ID"
+
+# Project NUMBERS (not IDs) -- fill from: terraform output -state=../landing-zone/terraform.tfstate
+# VPC-SC's access policy API requires numbers, unlike most other GCP APIs that accept project IDs.
+perimeters = {
+  prod-eu = { project_numbers = ["REPLACE_EU_API_NUM", "REPLACE_EU_DATA_NUM", "REPLACE_EU_ML_NUM"] }
+  prod-us = { project_numbers = ["REPLACE_US_API_NUM", "REPLACE_US_DATA_NUM", "REPLACE_US_ML_NUM"] }
+}
+
+restricted_services = [
+  "bigquery.googleapis.com",
+  "sqladmin.googleapis.com",
+  "storage.googleapis.com",
+  "aiplatform.googleapis.com",
+]
+
+kms_locations = {
+  prod-eu = "europe-west1"
+  prod-us = "us-central1"
+}
+
+cmek_project_ids = {
+  prod-eu = ["medsecure-eu-data-prod", "medsecure-eu-ml-prod"]
+  prod-us = ["medsecure-us-data-prod", "medsecure-us-ml-prod"]
+}
