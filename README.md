@@ -47,7 +47,7 @@ Structured around Google's six **Well-Architected Framework** pillars — see [`
 | 5 | [AI/ML Layer](docs/adr/ADR-005-ai-ml.md) | ✅ Done |
 | 6 | [Security & Compliance](docs/adr/ADR-006-security.md) | ✅ Done |
 | 7 | [Reliability & Disaster Recovery](docs/adr/ADR-007-reliability-dr.md) | ✅ Done |
-| 8 | [Cost Optimization / FinOps](docs/adr/ADR-008-cost.md) | ⬜ Planned |
+| 8 | [Cost Optimization / FinOps](docs/adr/ADR-008-cost.md) | ✅ Done |
 | 9 | [CI/CD & Infrastructure as Code](docs/adr/ADR-009-cicd.md) | ⬜ Planned |
 | 10 | [Observability](docs/adr/ADR-010-observability.md) | ⬜ Planned |
 
@@ -93,6 +93,7 @@ This project builds directly on prior hands-on work, published separately:
 ## Status
 
 🚧 Active build — following an 8-week phased roadmap (landing zone → network → security perimeter → compute/data → AI/ML → reliability/DR → cost → documentation). Progress tracked via the pillar table above.
+
 
 
 
