@@ -1,4 +1,4 @@
-# Observability Module
+﻿# Observability Module
 
 Implements **ADR-010: Observability** — the final pillar.
 
@@ -25,3 +25,4 @@ terraform plan -out=observability.tfplan
 ## Known limitation
 
 Not yet applied. The `select_slo_burn_rate()` and `select_slo_health()` MQL functions used in the alert policies and dashboard require the SLO to exist first within the same apply — if `terraform apply` errors on evaluation order, split this into two applies (SLO first, then the alerts/dashboard referencing it) rather than assuming a single apply will always resolve the dependency correctly.
+
