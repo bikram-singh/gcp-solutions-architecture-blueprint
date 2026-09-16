@@ -1,0 +1,72 @@
+<svg viewBox="0 0 1000 640" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <style>
+    .api { fill: #01579b; }
+    .data { fill: #1565c0; }
+    .sec { fill: #6a1b9a; }
+    .summary { fill: #b71c1c; }
+    .box-text { fill: #ffffff; font-size: 12px; font-weight: 600; }
+    .label { fill: #607d8b; font-size: 10px; font-style: italic; }
+    .arrow { stroke: #90a4ae; stroke-width: 1.5; fill: none; marker-end: url(#arrowhead7); }
+  </style>
+  <defs>
+    <marker id="arrowhead7" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#90a4ae"/>
+    </marker>
+  </defs>
+
+  <text x="500" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#263238">Four domain dashboards, not one dashboard per resource</text>
+
+  <!-- API tier dashboard -->
+  <rect x="30" y="60" width="220" height="130" rx="8" class="api"/>
+  <text x="140" y="85" text-anchor="middle" class="box-text">API Tier Golden Signals</text>
+  <text x="140" y="108" text-anchor="middle" class="label" fill="#e3f2fd">Latency (p50/p95/p99)</text>
+  <text x="140" y="124" text-anchor="middle" class="label" fill="#e3f2fd">Traffic vs Cloud Armor limit</text>
+  <text x="140" y="140" text-anchor="middle" class="label" fill="#e3f2fd">Errors (4xx/5xx)</text>
+  <text x="140" y="156" text-anchor="middle" class="label" fill="#e3f2fd">Saturation (HPA events)</text>
+  <text x="140" y="178" text-anchor="middle" class="box-text" font-size="10">SLO: 99.95% + burn-rate alerts</text>
+
+  <!-- Data pipeline -->
+  <rect x="270" y="60" width="220" height="130" rx="8" class="data"/>
+  <text x="380" y="85" text-anchor="middle" class="box-text">Data Pipeline Health</text>
+  <text x="380" y="115" text-anchor="middle" class="label" fill="#e3f2fd">Pub/Sub backlog</text>
+  <text x="380" y="135" text-anchor="middle" class="label" fill="#e3f2fd">Dataflow job health</text>
+  <text x="380" y="155" text-anchor="middle" class="label" fill="#e3f2fd">BigQuery slot/query perf</text>
+
+  <!-- Security -->
+  <rect x="510" y="60" width="220" height="130" rx="8" class="sec"/>
+  <text x="620" y="85" text-anchor="middle" class="box-text">Security &amp; Compliance Posture</text>
+  <text x="620" y="115" text-anchor="middle" class="label" fill="#e3f2fd">SCC Premium findings</text>
+  <text x="620" y="135" text-anchor="middle" class="label" fill="#e3f2fd">Data Access audit log metrics</text>
+  <text x="620" y="155" text-anchor="middle" class="label" fill="#e3f2fd">VPC-SC perimeter violations</text>
+
+  <!-- AI/ML -->
+  <rect x="750" y="60" width="220" height="130" rx="8" fill="#e65100"/>
+  <text x="860" y="85" text-anchor="middle" class="box-text">AI/ML Golden Signals</text>
+  <text x="860" y="115" text-anchor="middle" class="label" fill="#fff3e0">Agent response latency</text>
+  <text x="860" y="135" text-anchor="middle" class="label" fill="#fff3e0">Query volume</text>
+  <text x="860" y="155" text-anchor="middle" class="label" fill="#fff3e0">Grounding failures (not just HTTP</text>
+  <text x="860" y="171" text-anchor="middle" class="label" fill="#fff3e0">errors — a 200 with a bad answer counts)</text>
+
+  <!-- Arrows down to summary -->
+  <line class="arrow" x1="140" y1="190" x2="440" y2="290"/>
+  <line class="arrow" x1="380" y1="190" x2="460" y2="290"/>
+  <line class="arrow" x1="620" y1="190" x2="540" y2="290"/>
+  <line class="arrow" x1="860" y1="190" x2="560" y2="290"/>
+
+  <!-- Platform Health Summary -->
+  <rect x="300" y="300" width="400" height="110" rx="8" class="summary"/>
+  <text x="500" y="325" text-anchor="middle" class="box-text" font-size="13">Platform Health Summary</text>
+  <text x="500" y="350" text-anchor="middle" class="label" fill="#ffebee">SLO error-budget remaining</text>
+  <text x="500" y="368" text-anchor="middle" class="label" fill="#ffebee">DR trigger status (surfaces Pillar 7, not duplicated)</text>
+  <text x="500" y="386" text-anchor="middle" class="label" fill="#ffebee">Budget burn-down (surfaces Pillar 8, not duplicated)</text>
+
+  <!-- Note box -->
+  <rect x="30" y="450" width="940" height="120" rx="6" fill="#eceff1" stroke="#b71c1c" stroke-dasharray="4,3"/>
+  <text x="50" y="475" font-size="12" font-weight="600" fill="#263238">Why domain dashboards, not per-resource dashboards</text>
+  <text x="50" y="498" font-size="11" fill="#455a64">An on-call engineer needs "is the API tier healthy" answered in one glance, not twenty per-resource panels</text>
+  <text x="50" y="515" font-size="11" fill="#455a64">re-sorted three ways. This is the same discipline as ADR-003's compute split: match the tool to the actual</text>
+  <text x="50" y="532" font-size="11" fill="#455a64">question being asked. The Platform Health Summary surfaces Pillar 7 and 8's existing alerts by reference —</text>
+  <text x="50" y="549" font-size="11" fill="#455a64">it doesn't recreate them, avoiding the fragmentation this pillar exists to prevent.</text>
+
+  <text x="500" y="605" text-anchor="middle" font-size="12" fill="#455a64">ADR-010: Observability — the final pillar, tying every prior pillar's signals into one coherent view</text>
+</svg>

@@ -1,0 +1,10 @@
+api_project_ids = {
+  prod-eu = "medsecure-eu-api-prod"
+  prod-us = "medsecure-us-api-prod"
+}
+
+availability_slo_goal   = 0.9995
+slo_rolling_period_days = 30
+
+fast_burn_rate_threshold = 14.4
+slow_burn_rate_threshold = 6
