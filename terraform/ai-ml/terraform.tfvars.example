@@ -1,0 +1,10 @@
+regions = {
+  prod-eu = { ml_project_id = "medsecure-eu-ml-prod", region = "europe-west1" }
+  prod-us = { ml_project_id = "medsecure-us-ml-prod", region = "us-central1" }
+}
+
+agent_container_image = "gcr.io/medsecure-eu-ml-prod/medsecure-clinician-agent:latest"
+anomaly_model_id       = "publishers/google/models/anomaly-detection-timeseries"
+
+agent_min_instances = 0
+agent_max_instances = 20

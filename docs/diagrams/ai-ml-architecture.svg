@@ -1,0 +1,76 @@
+<svg viewBox="0 0 1000 600" xmlns="http://www.w3.org/2000/svg" font-family="Helvetica, Arial, sans-serif">
+  <style>
+    .clinician { fill: #455a64; }
+    .agent { fill: #2e7d32; }
+    .sa { fill: #6a1b9a; }
+    .bq { fill: #1565c0; }
+    .vertex { fill: #e65100; }
+    .box-text { fill: #ffffff; font-size: 12px; font-weight: 600; }
+    .label { fill: #607d8b; font-size: 10px; font-style: italic; }
+    .arrow { stroke: #90a4ae; stroke-width: 1.8; fill: none; marker-end: url(#arrowhead3); }
+    .constraint { stroke: #b71c1c; stroke-width: 1.5; stroke-dasharray: 4,3; fill: none; }
+  </style>
+  <defs>
+    <marker id="arrowhead3" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#90a4ae"/>
+    </marker>
+  </defs>
+
+  <text x="500" y="30" text-anchor="middle" font-size="14" font-weight="600" fill="#263238">Region: EU (identical pattern mirrored for US, never shared)</text>
+
+  <!-- Clinician -->
+  <rect x="40" y="70" width="140" height="36" rx="6" class="clinician"/>
+  <text x="110" y="92" text-anchor="middle" class="box-text">Clinician</text>
+
+  <!-- ADK Agent -->
+  <rect x="260" y="70" width="200" height="40" rx="6" class="agent"/>
+  <text x="360" y="95" text-anchor="middle" class="box-text">ADK Agent (Cloud Run)</text>
+  <line class="arrow" x1="180" y1="88" x2="260" y2="90"/>
+  <text x="360" y="125" text-anchor="middle" class="label">Gemini 2.5 Flash, min_instances=0</text>
+
+  <!-- Service Account -->
+  <rect x="530" y="70" width="200" height="40" rx="6" class="sa"/>
+  <text x="630" y="95" text-anchor="middle" class="box-text">Agent Service Account</text>
+  <line class="arrow" x1="460" y1="90" x2="530" y2="90"/>
+  <text x="630" y="125" text-anchor="middle" class="label">bigquery.dataViewer + jobUser ONLY</text>
+  <text x="630" y="138" text-anchor="middle" class="label">(same as a human analyst — not admin)</text>
+
+  <!-- BigQuery -->
+  <rect x="800" y="70" width="150" height="40" rx="6" class="bq"/>
+  <text x="875" y="95" text-anchor="middle" class="box-text">BigQuery (EU dataset)</text>
+  <line class="arrow" x1="730" y1="90" x2="800" y2="90"/>
+
+  <!-- Grounded response path -->
+  <line class="arrow" x1="875" y1="110" x2="875" y2="180"/>
+  <text x="875" y="200" text-anchor="middle" class="label" font-weight="600">Query result</text>
+  <line class="arrow" x1="800" y1="210" x2="480" y2="230"/>
+  <text x="640" y="200" text-anchor="middle" class="label">Grounded, not hallucinated</text>
+  <line class="arrow" x1="360" y1="230" x2="150" y2="230"/>
+  <rect x="30" y="215" width="160" height="34" rx="4" fill="#eceff1" stroke="#90a4ae"/>
+  <text x="110" y="236" text-anchor="middle" font-size="11" fill="#263238">Trustworthy answer</text>
+
+  <!-- Anomaly detection path -->
+  <rect x="40" y="320" width="180" height="36" rx="6" fill="#37474f"/>
+  <text x="130" y="342" text-anchor="middle" class="box-text">Telemetry stream (ADR-004)</text>
+
+  <rect x="280" y="320" width="220" height="40" rx="6" class="vertex"/>
+  <text x="390" y="345" text-anchor="middle" class="box-text">Vertex AI Endpoint</text>
+  <line class="arrow" x1="220" y1="338" x2="280" y2="340"/>
+  <text x="390" y="375" text-anchor="middle" class="label">Model Garden anomaly-detection-timeseries</text>
+  <text x="390" y="388" text-anchor="middle" class="label">(pre-trained, not custom-trained)</text>
+
+  <line class="arrow" x1="500" y1="340" x2="800" y2="340"/>
+  <rect x="800" y="322" width="150" height="34" rx="4" fill="#eceff1" stroke="#90a4ae"/>
+  <text x="875" y="343" text-anchor="middle" font-size="11" fill="#263238">Flagged anomalies</text>
+  <text x="875" y="365" text-anchor="middle" class="label">Written back to BigQuery,</text>
+  <text x="875" y="378" text-anchor="middle" class="label">queryable by the agent above</text>
+
+  <!-- Residency boundary note -->
+  <rect x="30" y="440" width="920" height="90" rx="6" fill="#eceff1" stroke="#b71c1c" stroke-dasharray="4,3"/>
+  <text x="50" y="465" font-size="12" font-weight="600" fill="#b71c1c">Residency boundary (structural, per ADR-001/002/004)</text>
+  <text x="50" y="488" font-size="11" fill="#263238">The US region runs an identical, fully separate instance of everything above — its own agent, its own</text>
+  <text x="50" y="505" font-size="11" fill="#263238">service account, its own Vertex AI endpoint, its own BigQuery dataset. No component is shared across</text>
+  <text x="50" y="522" font-size="11" fill="#263238">regions, so an EU clinician's query has no code path that could retrieve US patient data.</text>
+
+  <text x="500" y="565" text-anchor="middle" font-size="12" fill="#455a64">ADR-005: AI/ML Layer — grounded ADK agent (analyst-equivalent access) + Vertex AI anomaly detection, per region</text>
+</svg>
