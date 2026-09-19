@@ -1,5 +1,12 @@
 ﻿terraform {
   required_version = ">= 1.7.0"
+
+  cloud {
+    organization = "gcpcloudhub"
+    workspaces {
+      name = "medsecure-security"
+    }
+  }
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -65,5 +72,6 @@ provider "google" {
   user_project_override  = true
   billing_project         = "medsecure-eu-data-prod"
 }
+
 
 
