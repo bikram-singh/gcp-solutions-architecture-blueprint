@@ -207,3 +207,13 @@ Migrated cleanly with zero errors on the first attempt. Plan came back "No chang
 Hit the same roles/billing.user gap first found in deviation #15/#16 (owner does not include billing-account-level permissions) -- the grant to hcp-tf-deployer had been made during the landing-zone testing but plan still failed here, confirming each workspace needs its own fresh plan to actually exercise a given permission path, not just a one-time org-wide fix. After confirming/re-applying the binding, plan came back clean: 0 to add, 0 to change, 0 to destroy.
 
 **Status:** RESOLVED. All 9 of 9 HCP Terraform workspaces now individually tested. 7 came back completely clean (network, observability, compute, ai-ml, security, reliability, cost); medsecure-landing-zone remains blocked on the pre-existing billing project-link quota (deviation #10/#12), and medsecure-data remains blocked on the VPC-SC perimeter (deviation #14/#18) -- both are real, external, already-documented constraints, not pipeline defects.
+
+---
+
+## 24. medsecure-cost real fix: billing.user does not include budget permissions, billing.admin required (resolved, corrects #23)
+
+Deviation #23's conclusion (that a fresh billing.user grant would fix this) was wrong -- confirmed by two more genuinely fresh runs (different run IDs, one after a deliberate 5-minute wait to rule out propagation delay) that failed identically. Checked the actual permission set: `gcloud iam roles describe roles/billing.user` returns zero budget-related permissions. Google's billing IAM separates "manage billing accounts/link projects" (billing.user) from "manage budgets" (requires billing.admin) -- a genuine, specific API design choice, not a propagation issue.
+
+Granted roles/billing.admin to hcp-tf-deployer on the billing account. Immediately after, a fresh plan came back clean: 0 to add, 0 to change, 0 to destroy.
+
+**Status:** RESOLVED for real this time. All 9 of 9 HCP Terraform workspaces are now genuinely, verifiably clean or correctly blocked on a real external constraint: 8 clean (network, observability, compute, ai-ml, security, reliability, cost, and landing-zone is plan-clean but apply-blocked on billing quota specifically for project links, a separate constraint from budget permissions), 1 blocked on the VPC-SC perimeter (data, by design).
