@@ -1,4 +1,4 @@
-# GCP Solutions Architecture Blueprint
+# 🏥 GCP Solutions Architecture Blueprint
 
 **MedSecure** — a reference architecture for a multi-region healthcare SaaS platform on Google Cloud, built to demonstrate solutions-architecture-level decision-making, not just infrastructure delivery.
 
@@ -8,12 +8,28 @@
 ![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
 ![Pillars Live](https://img.shields.io/badge/pillars%20live-10%2F10-brightgreen)
 ![Deviations Documented](https://img.shields.io/badge/deviations%20documented-24-blue)
+![DR Drilled](https://img.shields.io/badge/DR%20drill-RTO%20~4min%20%7C%20RPO%200-success)
+![License](https://img.shields.io/badge/license-MIT-lightgrey)
 
-> Companion article: *["From Runbooks to Architecture Decision Records: Becoming a GCP Solutions Architect"](#)* (link once published)
+> 📄 Companion article: *["From Runbooks to Architecture Decision Records: Becoming a GCP Solutions Architect"](#)* (link once published)
 
 ---
 
-## Why this repo exists
+## 📑 Table of Contents
+
+- [Why this repo exists](#-why-this-repo-exists)
+- [The scenario](#-the-scenario)
+- [Architecture at a glance](#-architecture-at-a-glance)
+- [Proof, not just claims](#-proof-not-just-claims)
+- [Architecture diagrams](#-architecture-diagrams)
+- [Repo structure](#-repo-structure)
+- [Getting started](#-getting-started)
+- [Related deep-dive articles](#-related-deep-dive-articles)
+- [Status](#-status)
+
+---
+
+## 🎯 Why this repo exists
 
 A DevOps engineer proves they can build and operate what someone else designed. A Solutions Architect proves they can *decide* — weigh trade-offs, justify a pattern over its alternatives, and defend that decision against cost, security, reliability, and compliance pressure simultaneously.
 
@@ -23,7 +39,7 @@ It's also, deliberately, not a sanitized demo. Every module here was applied to 
 
 ---
 
-## The scenario
+## 🩺 The scenario
 
 **MedSecure** ingests patient-consented wearable telemetry, stores and analyzes it, and exposes a portal + APIs to partner clinics.
 
@@ -31,55 +47,55 @@ It's also, deliberately, not a sanitized demo. Every module here was applied to 
 
 | Requirement | Target |
 |---|---|
-| API tier availability | 99.95% |
-| Recovery Point Objective | ≤ 15 min |
-| Recovery Time Objective | ≤ 1 hr |
-| Data residency | EU and US customer data must not cross region |
-| Compliance | HIPAA-aligned controls (encryption, audit logging, least privilege) |
-| Elasticity | Absorb 10x seasonal traffic spikes without manual intervention |
-| Cost | Infra cost scales sub-linearly with user growth |
+| 🟢 API tier availability | 99.95% |
+| ⏱️ Recovery Point Objective | ≤ 15 min |
+| ⏱️ Recovery Time Objective | ≤ 1 hr |
+| 🌍 Data residency | EU and US customer data must not cross region |
+| 🔒 Compliance | HIPAA-aligned controls (encryption, audit logging, least privilege) |
+| 📈 Elasticity | Absorb 10x seasonal traffic spikes without manual intervention |
+| 💰 Cost | Infra cost scales sub-linearly with user growth |
 
-Full detail: [`docs/01-scenario-and-nfrs.md`](docs/01-scenario-and-nfrs.md)
+📘 Full detail: [`docs/01-scenario-and-nfrs.md`](docs/01-scenario-and-nfrs.md)
 
 ---
 
-## Architecture at a glance
+## 🏗️ Architecture at a glance
 
-Structured around Google's six **Well-Architected Framework** pillars — see [`docs/02-well-architected-mapping.md`](docs/02-well-architected-mapping.md) for the full mapping.
+Structured around Google's six **Well-Architected Framework** pillars — see [`docs/02-well-architected-mapping.md`](docs/02-well-architected-mapping.md) for the full mapping and an honest self-rating scorecard.
 
 | # | Pillar | ADR | Terraform | Status |
 |---|---|---|---|---|
-| 1 | Landing Zone & Resource Hierarchy | [ADR-001](docs/adr/ADR-001-landing-zone.md) | [`terraform/landing-zone`](terraform/landing-zone) | 🟢 **Live** — 8 folders, 4 org policies, 14 projects |
-| 2 | Network Architecture | [ADR-002](docs/adr/ADR-002-network.md) | [`terraform/network`](terraform/network) | 🟢 **Live** — NCC hub, Shared VPC, Cloud Armor, PSA peering |
-| 3 | Compute & Modernization | [ADR-003](docs/adr/ADR-003-compute.md) | [`terraform/compute`](terraform/compute) | 🟢 **Live** — GKE Autopilot (private nodes), 2 Cloud Run services |
-| 4 | Data & Analytics | [ADR-004](docs/adr/ADR-004-data.md) | [`terraform/data`](terraform/data) | 🟢 **Live** — Cloud SQL, BigQuery, Pub/Sub, Dataplex + real, drilled DR |
-| 5 | AI/ML Layer | [ADR-005](docs/adr/ADR-005-ai-ml.md) | [`terraform/ai-ml`](terraform/ai-ml) | 🟢 **Live** — Vertex AI endpoint, Cloud Run agent |
-| 6 | Security & Compliance | [ADR-006](docs/adr/ADR-006-security.md) | [`terraform/security`](terraform/security) | 🟢 **Live** — VPC-SC perimeter, CMEK |
-| 7 | Reliability & Disaster Recovery | [ADR-007](docs/adr/ADR-007-reliability-dr.md) | [`terraform/reliability`](terraform/reliability) | 🟢 **Live** — redesigned alerting + real drilled failover |
-| 8 | Cost Optimization / FinOps | [ADR-008](docs/adr/ADR-008-cost.md) | [`terraform/cost`](terraform/cost) | 🟢 **Live** — budget + notification channel |
-| 9 | CI/CD & Infrastructure as Code | [ADR-009](docs/adr/ADR-009-cicd.md) | [`.github/workflows`](.github/workflows) + [`terraform/*`](terraform) | 🟢 **Live** — 9 HCP Terraform workspaces, WIF auth, proven applies |
-| 10 | Observability | [ADR-010](docs/adr/ADR-010-observability.md) | [`terraform/observability`](terraform/observability) | 🟢 **Live** — SLO, burn-rate alerts, dashboard |
+| 1 | 🗂️ Landing Zone & Resource Hierarchy | [ADR-001](docs/adr/ADR-001-landing-zone.md) | [`terraform/landing-zone`](terraform/landing-zone) | 🟢 **Live** — 8 folders, 4 org policies, 14 projects |
+| 2 | 🌐 Network Architecture | [ADR-002](docs/adr/ADR-002-network.md) | [`terraform/network`](terraform/network) | 🟢 **Live** — NCC hub, Shared VPC, Cloud Armor, PSA peering |
+| 3 | ⚙️ Compute & Modernization | [ADR-003](docs/adr/ADR-003-compute.md) | [`terraform/compute`](terraform/compute) | 🟢 **Live** — GKE Autopilot (private nodes), 2 Cloud Run services |
+| 4 | 🗄️ Data & Analytics | [ADR-004](docs/adr/ADR-004-data.md) | [`terraform/data`](terraform/data) | 🟢 **Live** — Cloud SQL, BigQuery, Pub/Sub, Dataplex + real, drilled DR |
+| 5 | 🤖 AI/ML Layer | [ADR-005](docs/adr/ADR-005-ai-ml.md) | [`terraform/ai-ml`](terraform/ai-ml) | 🟢 **Live** — Vertex AI endpoint, Cloud Run agent |
+| 6 | 🔐 Security & Compliance | [ADR-006](docs/adr/ADR-006-security.md) | [`terraform/security`](terraform/security) | 🟢 **Live** — VPC-SC perimeter, CMEK |
+| 7 | 🛟 Reliability & Disaster Recovery | [ADR-007](docs/adr/ADR-007-reliability-dr.md) | [`terraform/reliability`](terraform/reliability) | 🟢 **Live** — redesigned alerting + real drilled failover |
+| 8 | 💵 Cost Optimization / FinOps | [ADR-008](docs/adr/ADR-008-cost.md) | [`terraform/cost`](terraform/cost) | 🟢 **Live** — budget + notification channel |
+| 9 | 🔁 CI/CD & Infrastructure as Code | [ADR-009](docs/adr/ADR-009-cicd.md) | [`.github/workflows`](.github/workflows) + [`terraform/*`](terraform) | 🟢 **Live** — 9 HCP Terraform workspaces, WIF auth, proven applies |
+| 10 | 📊 Observability | [ADR-010](docs/adr/ADR-010-observability.md) | [`terraform/observability`](terraform/observability) | 🟢 **Live** — SLO, burn-rate alerts, dashboard |
 
 Each pillar has: an **ADR** (the decision + rejected alternatives, *plus* a real "Implementation Status" section added after the build), a **Terraform module**, and an **architecture diagram**. Every ADR's Implementation Status links back to the specific `known-deviations.md` entries for that pillar, so the design reasoning and the real-world outcome are never disconnected from each other.
 
 ---
 
-## Proof, not just claims
+## 🔬 Proof, not just claims
 
 This section exists because a reference architecture is only as credible as the evidence behind it. Everything below is a real, reproducible result — not a description of intended behavior.
 
-### A real, measured disaster recovery drill (Pillar 7)
+### 🚑 A real, measured disaster recovery drill (Pillar 7)
 
 Not a tabletop exercise — an actual `gcloud sql instances promote-replica` run against a live Cloud SQL primary and cross-region replica, with a real test write tracked through the whole process.
 
 | Metric | Target | **Measured** |
 |---|---|---|
-| RTO | ≤ 60 min | **~3–4 min** |
-| RPO | ≤ 15 min | **0** — the test write's timestamp matched exactly, byte-for-byte, after promotion |
+| ⏱️ RTO | ≤ 60 min | **~3–4 min** ✅ |
+| 💾 RPO | ≤ 15 min | **0** ✅ — the test write's timestamp matched exactly, byte-for-byte, after promotion |
 
-Full drill log, including the honest caveat that a single-write test understates RPO risk under sustained load: [`docs/dr-drill/failover-runbook.md`](docs/dr-drill/failover-runbook.md)
+📘 Full drill log, including the honest caveat that a single-write test understates RPO risk under sustained load: [`docs/dr-drill/failover-runbook.md`](docs/dr-drill/failover-runbook.md)
 
-### A real, tested CI/CD pipeline (Pillar 9)
+### 🔁 A real, tested CI/CD pipeline (Pillar 9)
 
 All 9 HCP Terraform workspaces were individually tested with a genuine `git push → VCS trigger → plan → human approval → apply` cycle, authenticated via a dedicated Workload Identity Federation pool and service account — no static keys anywhere in the chain.
 
@@ -90,18 +106,36 @@ All 9 HCP Terraform workspaces were individually tested with a genuine `git push
 
 The GitHub `production` Environment protection rule (a required human reviewer before any prod apply) is genuinely active — verified directly via the GitHub API, not just described in a workflow YAML file that might not actually be enforced.
 
-### Real incidents, caught and cleanly recovered
+### 🚨 Real incidents, caught and cleanly recovered
 
 Two things went wrong during this build. Both are left in the record rather than edited out, because how a mistake gets caught and fixed says more about engineering judgment than a flawless run would:
 
 - **An accidental `terraform apply` destroy.** Mid-session, a command intended to fix a quota-project setting instead destroyed 14 real GCP projects. Recovered with **zero data loss** using Terraform `import` blocks to reattach state to the recovered (undeleted) resources. This incident is also the direct, stated justification for Pillar 9's mandatory prod-apply human-approval gate — not a theoretical best practice, a lesson learned the hard way in this exact repo.
 - **An unintentional shared-resource rename.** Importing an existing org-level VPC-SC Access Policy (owned by a separate, unrelated live project) briefly overwrote its display title during the same `apply` that correctly imported it. Caught and reverted within the same session, with the fix verified via a follow-up `terraform plan` showing zero drift.
 
-Full details on both, and everything else: [`docs/known-deviations.md`](docs/known-deviations.md) (24 entries total).
+📘 Full details on both, and everything else: [`docs/known-deviations.md`](docs/known-deviations.md) (24 entries total).
 
 ---
 
-## Repo structure
+## 📐 Architecture diagrams
+
+| Pillar | Diagram |
+|---|---|
+| 🗂️ Landing Zone | [`landing-zone-hierarchy.svg`](docs/diagrams/landing-zone-hierarchy.svg) |
+| 🌐 Network | [`network-topology.svg`](docs/diagrams/network-topology.svg) |
+| ⚙️ Compute | [`compute-architecture.svg`](docs/diagrams/compute-architecture.svg) |
+| 🗄️ Data | [`data-architecture.svg`](docs/diagrams/data-architecture.svg) |
+| 🤖 AI/ML | [`ai-ml-architecture.svg`](docs/diagrams/ai-ml-architecture.svg) |
+| 🔐 Security | [`security-architecture.svg`](docs/diagrams/security-architecture.svg) |
+| 🛟 Reliability/DR | [`dr-failover-architecture.svg`](docs/diagrams/dr-failover-architecture.svg) |
+| 💵 Cost | [`cost-scaling.svg`](docs/diagrams/cost-scaling.svg) |
+| 🔁 CI/CD | [`cicd-pipeline.svg`](docs/diagrams/cicd-pipeline.svg) |
+| 📊 Observability | [`observability-architecture.svg`](docs/diagrams/observability-architecture.svg) |
+| 🏢 **Real deployed hierarchy** | [`deployed-hierarchy.md`](docs/deployed-hierarchy.md) — the actual, live org structure (redacted IDs) |
+
+---
+
+## 📂 Repo structure
 
 ```
 .
@@ -109,13 +143,13 @@ Full details on both, and everything else: [`docs/known-deviations.md`](docs/kno
 ├── docs/
 │   ├── 01-scenario-and-nfrs.md
 │   ├── 02-well-architected-mapping.md
-│   ├── deployed-hierarchy.md        # the REAL, live org structure (redacted IDs)
-│   ├── known-deviations.md          # 24 documented real-world findings & fixes
-│   ├── adr/                         # one ADR per pillar, each with a real Implementation Status
-│   ├── diagrams/                    # whole-platform + per-pillar architecture diagrams
+│   ├── deployed-hierarchy.md        # real, live org structure
+│   ├── known-deviations.md          # 24 documented real-world findings
+│   ├── adr/                         # 10 ADRs, each with a real Implementation Status
+│   ├── diagrams/                    # architecture diagrams per pillar
 │   └── dr-drill/
-│       ├── failover-runbook.md      # real, measured RTO/RPO drill results
-│       └── scripts/                 # smoke-test SQL, cutover script
+│       ├── failover-runbook.md      # real, measured drill results
+│       └── scripts/
 ├── terraform/
 │   ├── landing-zone/
 │   ├── network/
@@ -126,59 +160,58 @@ Full details on both, and everything else: [`docs/known-deviations.md`](docs/kno
 │   ├── reliability/
 │   ├── cost/
 │   └── observability/
-│       # each module has its own README.md with design notes explaining
-│       # WHY the code looks the way it does, not just what it does
-├── .github/
-│   └── workflows/
-│       ├── terraform-plan.yml       # path-filtered plan-on-PR
-│       └── terraform-apply.yml      # auto-apply non-prod, human-gated prod apply
+├── .github/workflows/
+│   ├── terraform-plan.yml           # path-filtered plan-on-PR
+│   └── terraform-apply.yml          # auto-apply non-prod, gated prod apply
 └── cost-model/
     └── cost-model.csv               # itemized, ADR-linked cost model
 ```
 
+Each `terraform/<module>/` includes its own `README.md` with design notes explaining *why* the code looks the way it does — not just what it does.
+
 ---
 
-## Getting started
+## 🚀 Getting started
 
 Each module can be applied independently, but they have real dependencies on each other's outputs — apply in this order:
 
 ```bash
-# 1. Landing zone (no dependencies)
+# 1️⃣ Landing zone (no dependencies)
 cd terraform/landing-zone
 cp terraform.tfvars.example terraform.tfvars   # fill in your real org_id, billing_account
 terraform init && terraform plan
 
-# 2. Network (needs landing-zone's project IDs)
+# 2️⃣ Network (needs landing-zone's project IDs)
 cd ../network
 cp terraform.tfvars.example terraform.tfvars
 terraform init && terraform plan
 
-# 3+ Compute, Data, AI/ML, Security, Reliability, Cost, Observability
+# 3️⃣+ Compute, Data, AI/ML, Security, Reliability, Cost, Observability
 #     each needs the prior modules' real outputs -- see that module's own README.md
 ```
 
-**Before applying anything for real, read [`docs/known-deviations.md`](docs/known-deviations.md) first.** It documents nearly every real API quirk, IAM permission gap, and org-policy interaction this build actually hit while applying against a live org — most of the friction you'd otherwise rediscover yourself the hard way is already mapped out there, with the exact fix.
+> ⚠️ **Before applying anything for real, read [`docs/known-deviations.md`](docs/known-deviations.md) first.** It documents nearly every real API quirk, IAM permission gap, and org-policy interaction this build actually hit while applying against a live org — most of the friction you'd otherwise rediscover yourself the hard way is already mapped out there, with the exact fix.
 
 ---
 
-## Related deep-dive articles
+## 🔗 Related deep-dive articles
 
 This project builds directly on prior hands-on work, published separately:
 
-- **Cloud Armor** — WAF/DDoS/rate-limiting lab
-- **Network Connectivity Center** — hub-and-spoke connectivity lab
-- **VPC Service Controls** — the 7-part perimeter lab this repo's Security pillar directly extends, including reusing its existing org-level Access Policy rather than creating a duplicate
-- **Streaming Telemetry Pipeline** — the Pub/Sub → Dataflow → BigQuery pipeline MedSecure's Data pillar design reuses
-- **FAST Foundation** — the GCP landing zone project whose real, pre-existing org resources (network host project, Access Policy) this build deliberately integrated with rather than duplicated
+- 🛡️ **Cloud Armor** — WAF/DDoS/rate-limiting lab
+- 🌐 **Network Connectivity Center** — hub-and-spoke connectivity lab
+- 🔒 **VPC Service Controls** — the 7-part perimeter lab this repo's Security pillar directly extends, including reusing its existing org-level Access Policy rather than creating a duplicate
+- 📡 **Streaming Telemetry Pipeline** — the Pub/Sub → Dataflow → BigQuery pipeline MedSecure's Data pillar design reuses
+- 🏛️ **FAST Foundation** — the GCP landing zone project whose real, pre-existing org resources (network host project, Access Policy) this build deliberately integrated with rather than duplicated
 
 ---
 
-## Status
+## ✅ Status
 
-✅ **All 10 pillars have real, applied infrastructure or a fully proven mechanism.** What began as an 8-week phased design roadmap (landing zone → network → security perimeter → compute/data → AI/ML → reliability/DR → cost → documentation) is now substantially complete against a live GCP organization, not just on paper.
+**All 10 pillars have real, applied infrastructure or a fully proven mechanism.** What began as an 8-week phased design roadmap (landing zone → network → security perimeter → compute/data → AI/ML → reliability/DR → cost → documentation) is now substantially complete against a live GCP organization, not just on paper.
 
 Two precisely-scoped items remain open, both understood and documented rather than mysterious:
-- A **VPC Service Controls Access Level** is needed to complete Cloud SQL's cutover to fully private networking (the infrastructure for this — Private Service Access peering — is already live; only the perimeter access grant is missing).
-- A **billing-account quota increase** (a trial-tier project-link limit) is pending approval before `landing-zone`'s full 14-project fleet can be billed and applied end-to-end through the CI/CD pipeline.
+- 🔓 A **VPC Service Controls Access Level** is needed to complete Cloud SQL's cutover to fully private networking (the infrastructure for this — Private Service Access peering — is already live; only the perimeter access grant is missing).
+- 💳 A **billing-account quota increase** (a trial-tier project-link limit) is pending approval before `landing-zone`'s full 14-project fleet can be billed and applied end-to-end through the CI/CD pipeline.
 
-Progress and full history tracked via the pillar table above and [`docs/known-deviations.md`](docs/known-deviations.md).
+📘 Progress and full history tracked via the pillar table above and [`docs/known-deviations.md`](docs/known-deviations.md).
