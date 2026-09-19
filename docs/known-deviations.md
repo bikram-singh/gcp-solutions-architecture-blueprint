@@ -191,3 +191,11 @@ Migration hit a copy-paste artifact (an orphaned extra closing brace from an ear
 Migrated cleanly with zero errors on the first attempt -- no new API gaps, no permission issues. Plan came back "No changes. Your infrastructure matches the configuration," which also confirms the earlier access-policy-rename fix (deviation #8) is durable and correctly reflected in real state.
 
 **Status:** RESOLVED. 5 of 9 workspaces (network, observability, compute, ai-ml, security) now fully proven via HCP Terraform.
+
+---
+
+## 22. medsecure-reliability HCP Terraform test: clean no-op (resolved)
+
+Migrated cleanly with zero errors on the first attempt. Plan came back "No changes. Your infrastructure matches the configuration," confirming the earlier Cloud SQL native-metric redesign (deviation #5) is correctly reflected in real state through HCP Terraform, not just locally.
+
+**Status:** RESOLVED. 6 of 9 workspaces (network, observability, compute, ai-ml, security, reliability) now fully proven via HCP Terraform.
