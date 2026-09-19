@@ -56,3 +56,13 @@ The google_scc_v2_organization_scc_big_query_exports resource in the security mo
 Applying the security module imported the existing org-level Access Policy (accessPolicies/731858017875, title "gch-access-policy", owned by the separate FAST foundation project) rather than creating a duplicate, since access policies are singleton per organization. The import was correct, but main.tf still specified this module's own intended title ("medsecure-access-policy"), so the same apply that imported the policy also renamed it -- unintentionally overwriting a title used by another real project. Caught and reverted within the same session via `gcloud access-context-manager policies update --title=gch-access-policy`. No other properties of the policy were affected, and IDs (which other integrations would reference, not titles) never changed. main.tf now explicitly sets title to match the existing policy's real name, with a comment explaining this module does not own or rename it.
 
 **Status:** Resolved. Verify no other artifact (dashboards, docs, screenshots) in the FAST foundation project captured the temporary renamed state.
+
+---
+
+## 9. AI/ML module: real-world fixes (resolved)
+
+Applying the ai-ml module surfaced three real issues: (1) Cloud Run Admin API not enabled on the newly-billed medsecure-eu-ml-prod -- standard fix; (2) google_vertex_ai_endpoint requires the provider-level region to be set explicitly, not just the resource's own location field -- fixed via an added provider "google" { region = "europe-west1" } block; (3) Vertex AI (aiplatform.googleapis.com) API not enabled -- standard fix. All resolved; all 5 resources (service account, 2 IAM bindings, Cloud Run agent, Vertex AI endpoint) now live in medsecure-eu-ml-prod.
+
+Same placeholder-image caveat as the compute module applies here: the deployed Cloud Run "clinician agent" runs Google's public Cloud Run sample image, not the real ADK agent built in the terraform-adk-agent project -- that integration (BigQuery grounding, Gemini 2.5 Flash) is application code not yet wired into this deployment.
+
+**Status:** Resolved / documented limitation on scope.

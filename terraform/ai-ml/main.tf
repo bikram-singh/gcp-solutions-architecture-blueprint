@@ -89,3 +89,7 @@ resource "google_vertex_ai_endpoint" "anomaly_detection" {
   # of writing. This endpoint resource provisions the serving infrastructure
   # the deployment step targets.
 }
+
+provider "google" {
+  region = "europe-west1"
+}
