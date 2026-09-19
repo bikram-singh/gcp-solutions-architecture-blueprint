@@ -125,3 +125,15 @@ Progress made before hitting this: Private Service Access (PSA) peering was succ
 **What remains:** an Access Level needs to be added to the VPC-SC perimeter (accesscontextmanager access level, scoped by IP range or identity) explicitly permitting the operator's Terraform runs to reach inside the perimeter. This is genuine, separate configuration work -- not a quick fix -- and is exactly the kind of real trade-off a security-conscious architecture produces: tightening one pillar (Security) creates friction for another (Data) that has to be deliberately, explicitly resolved, not waved through.
 
 **Status:** Open. PSA infrastructure ready; the actual Cloud SQL cutover is blocked pending a VPC-SC access level. Cloud SQL remains on the temporary public-IP configuration (deviation #1/#2) until this is resolved.
+
+---
+
+## 15. HCP Terraform end-to-end proof: complete, except for the pre-existing billing quota (deviation #10/#12)
+
+Full state migration + a real VCS-triggered apply run were tested against medsecure-landing-zone. In order, this surfaced and resolved: WIF audience mismatch (provider needed the GCP-format audience, not the OIDC issuer URL), an incorrect quota project inherited from local gcloud config (fixed via explicit provider billing_project), 5 missing APIs on medsecure-network-hub (cloudresourcemanager, orgpolicy, accesscontextmanager, cloudkms, cloudbilling), and insufficient IAM scope (hcp-tf-deployer only had Owner on 5 specific projects, not the org -- landing-zone manages all 14, so org-level Owner was granted).
+
+After all of that, the run reached the actual, original constraint from early in this session: the billing account's 5-project link quota (deviation #10/#12). 9 of landing-zone's 14 managed projects still are not billing-linked and cannot become so until the quota increase is approved. This is not a new problem -- it is the same one, now encountered via a different, more complete path (a real HCP Terraform apply rather than a local one).
+
+**What this proves:** the entire CI/CD pipeline -- git push, VCS trigger, HCP Terraform plan, WIF auth, org-scoped permissions, human approval gate -- is genuinely real and functional. The only remaining blocker to a fully clean apply is external (the billing account tier), not anything in the pipeline itself.
+
+**Status:** Pipeline proven end-to-end. Full clean apply blocked on the pre-existing billing quota increase (deviation #10/#12), not a new issue.
