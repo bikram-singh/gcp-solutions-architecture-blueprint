@@ -137,3 +137,15 @@ After all of that, the run reached the actual, original constraint from early in
 **What this proves:** the entire CI/CD pipeline -- git push, VCS trigger, HCP Terraform plan, WIF auth, org-scoped permissions, human approval gate -- is genuinely real and functional. The only remaining blocker to a fully clean apply is external (the billing account tier), not anything in the pipeline itself.
 
 **Status:** Pipeline proven end-to-end. Full clean apply blocked on the pre-existing billing quota increase (deviation #10/#12), not a new issue.
+
+---
+
+## 16. First fully successful HCP Terraform apply (resolved -- CI/CD pipeline genuinely proven end-to-end)
+
+medsecure-network was migrated to HCP Terraform (state push + cloud block) the same way as medsecure-landing-zone. Unlike landing-zone, this module has no billing-quota exposure (it only touches already-billed projects), so it was the right candidate to prove a completely clean run.
+
+One additional permission gap was found and fixed: roles/owner does not include roles/compute.xpnAdmin, which Shared VPC service-project attachment specifically requires (compute.organizations.enableXpnResource) -- granted explicitly at the org level. After that fix, a real VCS-triggered run (git push -> HCP Terraform plan -> human approval -> apply) completed with 1 added, 0 changed, 0 destroyed, and correct outputs matching live infrastructure.
+
+**This closes out deviation #13/#15's remaining open question.** The CI/CD pipeline is not just theoretically wired -- it has now genuinely, successfully applied real infrastructure changes through the full designed workflow at least once, with zero errors, zero partial failures, and a human-approved apply gate exercised for real.
+
+**Status:** RESOLVED. Pipeline proven complete and successful.
