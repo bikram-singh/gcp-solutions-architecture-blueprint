@@ -77,3 +77,5 @@ Both terraform apply and a bare gcloud billing budgets create (no filters, no no
 
 **Status:** Open -- likely platform limitation, not a config bug.
 
+
+**Update:** Deviation #5 is now RESOLVED -- see the reliability module's redesign (queries cloudsql.googleapis.com/database/up directly, ALIGN_MIN aligner). Alert policy is live in medsecure-eu-data-prod.
