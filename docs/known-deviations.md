@@ -79,3 +79,13 @@ Both terraform apply and a bare gcloud billing budgets create (no filters, no no
 
 
 **Update:** Deviation #5 is now RESOLVED -- see the reliability module's redesign (queries cloudsql.googleapis.com/database/up directly, ALIGN_MIN aligner). Alert policy is live in medsecure-eu-data-prod.
+
+---
+
+## 11. CI/CD: GitHub Environment protection now real; HCP Terraform still unwired
+
+The `production` GitHub Environment referenced in .github/workflows/terraform-apply.yml has been created for real, with a required_reviewers protection rule (bikram-singh) confirmed active via the GitHub API. This is the actual safety gate ADR-009 is built around -- it now genuinely blocks any prod apply without manual approval, not just in the YAML's intent.
+
+What remains unwired: the HCP Terraform side (8 workspaces matching terraform/<module>/, and the HCP_TERRAFORM_TOKEN repo secret the workflows reference). This requires signing up for an HCP Terraform account and generating an API token -- a real account-creation step outside what a coding session can complete. The workflows are ready to use once that token exists.
+
+**Status:** Partially resolved -- GitHub Environment gate is genuinely live; HCP Terraform wiring remains a manual setup task.
