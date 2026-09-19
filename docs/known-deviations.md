@@ -89,3 +89,15 @@ The `production` GitHub Environment referenced in .github/workflows/terraform-ap
 What remains unwired: the HCP Terraform side (8 workspaces matching terraform/<module>/, and the HCP_TERRAFORM_TOKEN repo secret the workflows reference). This requires signing up for an HCP Terraform account and generating an API token -- a real account-creation step outside what a coding session can complete. The workflows are ready to use once that token exists.
 
 **Status:** Partially resolved -- GitHub Environment gate is genuinely live; HCP Terraform wiring remains a manual setup task.
+
+---
+
+## 12. Cost budget: root cause found and fixed (was mis-diagnosed as a platform limit)
+
+Deviation #10 originally concluded the billing budget creation failure was a genuine platform-tier restriction. This was wrong. Systematic isolation via raw gcloud billing budgets create calls (varying currency, thresholds, and notification-channel wiring independently) found the actual cause: the module hardcoded currency_code = "USD", but this billing account's real currency is INR -- confirmed by an existing budget on the account (from the FAST foundation project) that was denominated in INR. Every USD-denominated creation attempt failed with an identical, unhelpfully generic "400: invalid argument" regardless of any other parameter, which is why thresholds and filter changes never resolved it.
+
+Fixed by changing currency_code to "INR" and monthly_budget_amount_usd's value to a realistic INR figure (150000). The budget_filter's calendar_period field, added during earlier debugging, turned out to be unnecessary once currency was corrected -- kept in the config since it is valid and harmless, not because it was required.
+
+**Lesson:** deviation #10's original conclusion ("genuine platform limit") was reached after testing amount and thresholds but not currency, and was stated with more confidence than the evidence supported. Correcting the record here rather than leaving the earlier, wrong conclusion standing.
+
+**Status:** RESOLVED. Real budget live: billingAccounts/012E9C-0D5AF1-5575CE/budgets/f3e10844-7db0-4a6c-805e-1658d7b35bcf

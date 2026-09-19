@@ -33,11 +33,12 @@ resource "google_billing_budget" "medsecure_org_budget" {
 
   budget_filter {
     credit_types_treatment = "INCLUDE_ALL_CREDITS"
+    calendar_period         = "MONTH"
   }
 
   amount {
     specified_amount {
-      currency_code = "USD"
+      currency_code = "INR"
       units         = tostring(var.monthly_budget_amount_usd)
     }
   }
@@ -59,5 +60,7 @@ provider "google" {
   user_project_override  = true
   billing_project         = "medsecure-logging"
 }
+
+
 
 
