@@ -149,3 +149,11 @@ One additional permission gap was found and fixed: roles/owner does not include 
 **This closes out deviation #13/#15's remaining open question.** The CI/CD pipeline is not just theoretically wired -- it has now genuinely, successfully applied real infrastructure changes through the full designed workflow at least once, with zero errors, zero partial failures, and a human-approved apply gate exercised for real.
 
 **Status:** RESOLVED. Pipeline proven complete and successful.
+
+---
+
+## 17. Second clean HCP Terraform apply: medsecure-observability (resolved)
+
+Following the same migration pattern as medsecure-network, medsecure-observability was wired to HCP Terraform and applied through the full VCS-triggered pipeline. This one succeeded cleanly on the first attempt -- no new permission gaps, no new API-enable rounds needed, confirming the WIF/IAM setup from deviations #13/#16 generalizes correctly to a workspace with a different resource mix (Cloud Monitoring resources rather than networking).
+
+**Status:** RESOLVED. 2 of 9 workspaces (network, observability) now fully proven with real, successful applies.
