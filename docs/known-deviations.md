@@ -32,3 +32,11 @@ The reliability module's `google_monitoring_uptime_check_config` targets a `clou
 **Resolution plan:** redesign the alert policy to query `cloudsql.googleapis.com/database/up` directly instead of going through an uptime check, and drop the `google_monitoring_uptime_check_config` resource entirely.
 
 **Status:** Open.
+
+---
+
+## 6. GKE cluster: private nodes required (resolved, and consistent with design)
+
+The first two GKE Autopilot creation attempts failed with STATUS: ERROR because the org enforces constraints/compute.vmExternalIpAccess, which blocks external IPs on node VMs. Fixed by adding private_cluster_config (enable_private_nodes=true) to the cluster resource. This is not a workaround -- ADR-002 already specified no public IPs on backend tiers, so this fix brings the implementation in line with the original design rather than deviating from it. Two broken clusters were created and deleted during debugging; no data loss, both were empty clusters with no workloads deployed.
+
+**Status:** Resolved.

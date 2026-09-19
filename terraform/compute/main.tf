@@ -1,4 +1,4 @@
-terraform {
+﻿terraform {
   required_version = ">= 1.7.0"
   required_providers {
     google = {
@@ -26,8 +26,20 @@ resource "google_container_cluster" "api_cluster" {
   network    = each.value.network
   subnetwork = each.value.subnetwork
 
-  # Workload Identity is on by default in Autopilot, but stated explicitly
-  # here since it's the load-bearing control for the least-privilege NFR.
+  ip_allocation_policy {
+    cluster_secondary_range_name  = "pods"
+    services_secondary_range_name = "services"
+  }
+
+  # Nodes get no external IP, matching ADR-002's no-public-IP design --
+  # and required regardless, since the org enforces
+  # constraints/compute.vmExternalIpAccess (discovered on real apply).
+  private_cluster_config {
+    enable_private_nodes    = true
+    enable_private_endpoint = false
+    master_ipv4_cidr_block  = "172.16.0.0/28"
+  }
+
   workload_identity_config {
     workload_pool = "${each.value.project_id}.svc.id.goog"
   }
@@ -56,7 +68,6 @@ resource "google_cloud_run_v2_service" "event_service" {
       image = each.value.image
     }
 
-    # Workload Identity Federation — no service account keys.
     service_account = google_service_account.cloud_run_identity[each.key].email
   }
 }
@@ -64,7 +75,7 @@ resource "google_cloud_run_v2_service" "event_service" {
 resource "google_service_account" "cloud_run_identity" {
   for_each     = var.cloud_run_services
   project      = each.value.project_id
-  # GCP account_id has a 30-char limit -- keep the prefix short and truncate the key.
   account_id   = "ms-${substr(each.key, 0, 24)}-sa"
   display_name = "Workload identity for ${each.key} (no long-lived keys)"
 }
+
