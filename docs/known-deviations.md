@@ -167,3 +167,11 @@ Migrating medsecure-data to HCP Terraform and running a real plan hit the identi
 A separate, unrelated, and genuinely fixable issue was also found: pubsub.googleapis.com was not enabled on medsecure-eu-data-prod for this identity/context -- fixed with a standard API enable.
 
 **Status:** The Pub/Sub API gap is resolved. The VPC-SC block remains open, tracked under deviation #14 -- adding an Access Level to the perimeter is the real fix, applicable to both local and HCP Terraform access equally.
+
+---
+
+## 19. medsecure-compute HCP Terraform test: perfect no-op (resolved)
+
+Migrated cleanly, plan came back "No changes. Your infrastructure matches the configuration." -- zero errors, zero drift requiring action, on the first attempt. The GKE cluster and both Cloud Run services all refreshed correctly through HCP Terraform with no new permission or API gaps.
+
+**Status:** RESOLVED. 3 of 9 workspaces (network, observability, compute) now fully proven via HCP Terraform.
