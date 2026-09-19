@@ -40,18 +40,11 @@ resource "google_sql_database_instance" "primary" {
     }
 
     ip_configuration {
-      # TEMPORARY DEVIATION FROM ADR-002: public IP + authorized network,
-      # pending the network module's billed shared-services project.
-      # See docs/known-deviations.md. Do not treat as the final design.
-      ipv4_enabled = true
-
-      dynamic "authorized_networks" {
-        for_each = var.authorized_ip_ranges
-        content {
-          name  = authorized_networks.key
-          value = authorized_networks.value
-        }
-      }
+      # Private-only, per ADR-002. The temporary public-IP deviation
+      # (known-deviations.md item 1/2) is resolved now that Private
+      # Service Access exists in the network module.
+      ipv4_enabled    = false
+      private_network = var.vpc_self_link
     }
   }
 
@@ -91,4 +84,5 @@ resource "google_dataplex_lake" "medsecure" {
   name     = "medsecure-${each.key}-lake"
   location = each.value.region
 }
+
 

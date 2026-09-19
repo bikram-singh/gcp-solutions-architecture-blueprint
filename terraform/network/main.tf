@@ -1,4 +1,4 @@
-terraform {
+﻿terraform {
   required_version = ">= 1.7.0"
   required_providers {
     google = {
@@ -39,6 +39,19 @@ resource "google_compute_subnetwork" "region_subnet" {
   network       = google_compute_network.region_vpc[each.key].id
 
   private_ip_google_access = true # required for Private Google Access to managed services, no public IPs on backend tiers
+
+  # GKE Autopilot always creates VPC-native clusters, which require
+  # pre-declared secondary ranges for pod and service IPs when the
+  # cluster lives on a Shared VPC. Discovered when applying the compute
+  # module for real -- see terraform/compute/README.md.
+  secondary_ip_range {
+    range_name    = "pods"
+    ip_cidr_range = "10.100.0.0/16"
+  }
+  secondary_ip_range {
+    range_name    = "services"
+    ip_cidr_range = "10.200.0.0/20"
+  }
 }
 
 # --- Enable each region VPC as a Shared VPC host -----------------------------
@@ -138,4 +151,26 @@ resource "google_compute_security_policy" "medsecure_waf" {
     }
     description = "Default allow rule."
   }
+}
+
+# --- Private Service Access: required for Cloud SQL private IP -------------
+# Reserves an IP range for Google-managed services (Cloud SQL, etc.) to
+# peer into this VPC. This is what allows Cloud SQL to finally use
+# private_network instead of the temporary public-IP workaround
+# (see docs/known-deviations.md item 1/2).
+resource "google_compute_global_address" "private_service_range" {
+  for_each      = var.region_networks
+  project       = each.value.host_project_id
+  name          = "medsecure-${each.key}-psa-range"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  prefix_length = 16
+  network       = google_compute_network.region_vpc[each.key].id
+}
+
+resource "google_service_networking_connection" "private_service_connection" {
+  for_each                = var.region_networks
+  network                  = google_compute_network.region_vpc[each.key].id
+  service                  = "servicenetworking.googleapis.com"
+  reserved_peering_ranges  = [google_compute_global_address.private_service_range[each.key].name]
 }

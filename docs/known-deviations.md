@@ -113,3 +113,15 @@ A real test plan run against medsecure-landing-zone confirmed the full chain wor
 **What remains, if pursued further:** importing local terraform.tfstate into each HCP Terraform workspace (via terraform state push) so each workspace's state matches the real, already-applied infrastructure. This is a distinct follow-up task from proving the auth pipeline works, which is what this deviation entry closes out.
 
 **Status:** RESOLVED. GitHub Environment protection (deviation #11) + working HCP Terraform WIF auth (this entry) together mean the CI/CD pipeline described in ADR-009 is genuinely real, not just YAML describing an intent.
+
+---
+
+## 14. Cloud SQL private-networking revert blocked by the VPC-SC perimeter itself (open, and a genuinely interesting finding)
+
+Attempting to revert Cloud SQL to private-only (closing deviation #1/#2) surfaced a real, unplanned interaction between two pillars: the VPC-SC perimeter applied in Pillar 6 now blocks Terraform's own local-machine access to Cloud SQL and BigQuery inside the perimeter -- "Request is prohibited by organization's policy... VPC_SERVICE_CONTROLS". This is the perimeter working exactly as designed, not a bug: it restricts API access to explicitly allowed identities/contexts, and a local terraform plan run is not one of them.
+
+Progress made before hitting this: Private Service Access (PSA) peering was successfully added to the network module (google_compute_global_address + google_service_networking_connection, both live in medsecure-network-hub), and data/main.tf was updated to reference it via private_network = var.vpc_self_link. This infrastructure is real and ready.
+
+**What remains:** an Access Level needs to be added to the VPC-SC perimeter (accesscontextmanager access level, scoped by IP range or identity) explicitly permitting the operator's Terraform runs to reach inside the perimeter. This is genuine, separate configuration work -- not a quick fix -- and is exactly the kind of real trade-off a security-conscious architecture produces: tightening one pillar (Security) creates friction for another (Data) that has to be deliberately, explicitly resolved, not waved through.
+
+**Status:** Open. PSA infrastructure ready; the actual Cloud SQL cutover is blocked pending a VPC-SC access level. Cloud SQL remains on the temporary public-IP configuration (deviation #1/#2) until this is resolved.

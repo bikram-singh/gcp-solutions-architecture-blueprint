@@ -30,3 +30,8 @@ variable "authorized_ip_ranges" {
   type        = map(string)
   default     = {}
 }
+
+variable "vpc_self_link" {
+  description = "Self-link of the region VPC (from the network module output), now that Private Service Access exists -- see known-deviations.md item 1/2 for why this replaces the temporary public-IP config."
+  type        = string
+}
