@@ -1,5 +1,12 @@
 ﻿terraform {
   required_version = ">= 1.7.0"
+
+  cloud {
+    organization = "gcpcloudhub"
+    workspaces {
+      name = "medsecure-reliability"
+    }
+  }
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -59,3 +66,10 @@ resource "google_monitoring_alert_policy" "primary_sql_down" {
   }
 }
 
+
+
+provider "google" {
+  project                = "medsecure-eu-data-prod"
+  user_project_override  = true
+  billing_project         = "medsecure-eu-data-prod"
+}
