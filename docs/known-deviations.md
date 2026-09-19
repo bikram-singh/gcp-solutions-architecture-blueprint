@@ -157,3 +157,13 @@ One additional permission gap was found and fixed: roles/owner does not include 
 Following the same migration pattern as medsecure-network, medsecure-observability was wired to HCP Terraform and applied through the full VCS-triggered pipeline. This one succeeded cleanly on the first attempt -- no new permission gaps, no new API-enable rounds needed, confirming the WIF/IAM setup from deviations #13/#16 generalizes correctly to a workspace with a different resource mix (Cloud Monitoring resources rather than networking).
 
 **Status:** RESOLVED. 2 of 9 workspaces (network, observability) now fully proven with real, successful applies.
+
+---
+
+## 18. medsecure-data HCP Terraform test: confirms VPC-SC blocks HCP Terraform too (resolved as new information for deviation #14)
+
+Migrating medsecure-data to HCP Terraform and running a real plan hit the identical VPC-SC "Request is prohibited by organization's policy" error on BigQuery and Cloud SQL that local terraform runs hit (deviation #14). This is valuable confirmation, not a new problem: the perimeter correctly blocks any caller -- local machine or HCP Terraform's remote execution environment -- that is not explicitly granted an Access Level. Security is working exactly as intended.
+
+A separate, unrelated, and genuinely fixable issue was also found: pubsub.googleapis.com was not enabled on medsecure-eu-data-prod for this identity/context -- fixed with a standard API enable.
+
+**Status:** The Pub/Sub API gap is resolved. The VPC-SC block remains open, tracked under deviation #14 -- adding an Access Level to the perimeter is the real fix, applicable to both local and HCP Terraform access equally.
