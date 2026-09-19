@@ -88,3 +88,9 @@ constraints/gcp.resourceLocations:
 - ADR-006 (Security): VPC Service Controls perimeters can be defined per region folder cleanly, since the folder boundary already matches the residency boundary
 
 **Revisit if:** MedSecure expands beyond two regions (e.g., adds APAC) — the folder-per-region pattern scales, but the org policy constraint list needs updating per new region.
+
+---
+
+## Implementation Status (updated after real build)
+
+**Live.** All 25 resources (8 folders, 4 org policies, 14 projects) applied to a real GCP org. Survived and recovered cleanly from an accidental mid-session `terraform apply` destroy (Terraform import blocks used to restore state with zero data loss) -- see `docs/known-deviations.md`. Apply is plan-clean but blocked from fully re-applying via HCP Terraform on 9 of 14 projects due to a billing-account project-link quota (trial tier) -- see known-deviations.md #10/#12.

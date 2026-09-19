@@ -94,3 +94,9 @@ Telemetry stream (from ADR-004's Pub/Sub -> Dataflow -> BigQuery)
 - ADR-006 (Security): the "same access as a human analyst" principle here is a direct instance of the least-privilege pattern ADR-006 formalizes platform-wide
 
 **Revisit if:** clinician usage reveals grounding gaps (the agent can't answer a class of question a human analyst could) — at that point, either the retrieval query patterns need expanding within the same access boundary, or a genuinely MedSecure-tuned model becomes justified once real usage data exists to train on.
+
+---
+
+## Implementation Status (updated after real build)
+
+**Live.** Vertex AI endpoint, Cloud Run agent, service account, and IAM bindings all applied to `medsecure-eu-ml-prod`. The deployed agent runs a placeholder container image (Google's public Cloud Run sample), not the real ADK agent -- that integration (BigQuery grounding, Gemini 2.5 Flash) is application code not yet wired into this deployment. Verified with a clean, zero-drift HCP Terraform apply.

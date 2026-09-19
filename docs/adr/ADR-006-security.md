@@ -90,3 +90,9 @@ Platform-wide, both perimeters:
 - ADR-008 (Cost): CMEK key management and SCC Premium have real cost implications that the cost model needs to account for explicitly, not treat as free
 
 **Revisit if:** a genuine, approved business need for cross-region aggregate data emerges — at that point, design an explicit perimeter bridge with its own access-level review, rather than loosening either perimeter's boundary generally.
+
+---
+
+## Implementation Status (updated after real build)
+
+**Live.** VPC Service Controls perimeter and CMEK key both applied to `medsecure-eu-data-prod`, using a real, pre-existing org-level access policy imported rather than duplicated. One real incident during setup: the import briefly and unintentionally renamed that shared access policy (used by another live project); caught and reverted within the same session -- see known-deviations.md #8. The SCC BigQuery export was deliberately left out of scope, since it requires Security Command Center Premium activation at the org level. The perimeter itself is confirmed working exactly as designed -- it blocks unauthorized access from both local machines and HCP Terraform's remote execution identically.

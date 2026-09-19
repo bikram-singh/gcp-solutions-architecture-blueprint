@@ -92,3 +92,9 @@ Dashboard: Platform Health Summary (the executive/status-check view)
 - The Platform Health Summary dashboard is a natural, concrete artifact for the Medium article's architecture walkthrough — a single screenshot that visibly ties together DR, cost, and SLO signals in one place
 
 **Revisit if:** real production usage reveals a golden signal this design missed — most likely candidate, per the AI/ML section above, is that "grounding failure" needs a more precise definition once real clinician query patterns exist to observe.
+
+---
+
+## Implementation Status (updated after real build)
+
+**Live.** Monitoring service, SLO, both burn-rate alert policies, and the dashboard all applied to `medsecure-eu-api-prod`. The dashboard JSON required four rounds of real GCP schema fixes (tile `title` placement, explicit `xPos`/`yPos`/`width`/`height`, and a `columns` value on the mosaic layout) -- none of which are obvious from the Terraform provider's own documentation. Verified with a clean, zero-drift HCP Terraform apply.

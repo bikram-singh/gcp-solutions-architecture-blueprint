@@ -99,3 +99,9 @@ The deciding factor: MedSecure's two workload types genuinely have different sha
 - ADR-010 (Observability): golden-signals dashboards span both GKE and Cloud Run from day one, since both were designed with Cloud Monitoring integration in mind from this decision
 
 **Revisit if:** a future workload needs GPU support or privileged node access that Autopilot doesn't accommodate — add a Standard-mode node pool scoped to that workload only, rather than migrating the whole cluster off Autopilot.
+
+---
+
+## Implementation Status (updated after real build)
+
+**Live.** GKE Autopilot cluster (private nodes, per ADR-002) and both Cloud Run services applied to `medsecure-eu-api-prod`. Getting GKE working required six real, sequential fixes -- secondary IP ranges, `ip_allocation_policy`, Shared VPC IAM roles, GKE API on the host project, Shared VPC service-project attachment, and the org's `vmExternalIpAccess` policy -- all documented in known-deviations.md. Verified with a clean, zero-drift HCP Terraform apply.

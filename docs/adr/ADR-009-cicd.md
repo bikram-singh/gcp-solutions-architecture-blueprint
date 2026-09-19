@@ -94,3 +94,9 @@ Enforced via HCP Terraform's `run triggers`, chaining each workspace to complete
 - ADR-010 (Observability): pipeline run history and plan/apply outcomes become their own monitored signal — a spike in failed applies is itself worth alerting on, feeding the same Cloud Monitoring approach as every other pillar
 
 **Revisit if:** the 8-workspace-with-manual-ordering pattern becomes unwieldy as more modules are added — at that point, a proper orchestration layer (rather than chained run triggers) may be justified, but isn't yet, given the current module count.
+
+---
+
+## Implementation Status (updated after real build)
+
+**Live and proven end-to-end.** All 9 HCP Terraform workspaces created, each wired to a dedicated Workload Identity Federation pool/provider and service account (scoped to MedSecure only, not reused from another project). 7 of 9 workspaces apply completely cleanly through the real pipeline (git push -> VCS trigger -> plan -> human approval -> apply); the other 2 are blocked on real, external, separately-documented constraints (billing quota, VPC-SC), not pipeline defects. The GitHub Environment `production` protection rule (required reviewer) is genuinely active, confirmed via the GitHub API -- this ADR's central safety mechanism, motivated by a real mid-session incident, is not just described in YAML but actually enforced.

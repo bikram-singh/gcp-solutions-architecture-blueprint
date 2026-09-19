@@ -88,3 +88,9 @@ The deciding factor: only Option C keeps the residency boundary from ADR-001 int
 - ADR-007 (Reliability/DR): the hub-and-spoke topology means adding a DR region later is "add another spoke," not a redesign
 
 **Revisit if:** traffic patterns show the hub becoming a latency bottleneck for high-volume EU↔US shared-service calls (expected to be rare, since customer-facing workload traffic should never need to cross the residency boundary in the first place — if it does, that's a compliance issue to fix, not a network one).
+
+---
+
+## Implementation Status (updated after real build)
+
+**Live.** NCC hub, Shared VPC, subnet (with secondary IP ranges added for GKE), Private Service Access peering, and Cloud Armor policy all applied to `medsecure-network-hub`. Verified with a clean, zero-error HCP Terraform apply through the full CI/CD pipeline. See known-deviations.md for the Shared VPC + GKE IAM/API discoveries made while wiring Compute to this network.

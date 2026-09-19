@@ -95,3 +95,9 @@ Clinic Portal / API
 - ADR-007 (Reliability/DR): the Cloud SQL cross-region replica is the literal mechanism the DR failover drill exercises
 
 **Revisit if:** telemetry volume grows to the point where a single regional Dataflow job becomes a bottleneck — the pipeline was designed and load-tested independently in the standalone project; if MedSecure's projected volume exceeds what was validated there, revisit job parallelism before assuming the architecture itself needs to change.
+
+---
+
+## Implementation Status (updated after real build)
+
+**Live**, with one open, explicitly tracked deviation: Cloud SQL currently runs on a temporary public IP + authorized-network configuration rather than the private-only design this ADR specifies, because the private-networking cutover is blocked by the VPC-SC perimeter (ADR-006) correctly refusing access to any caller not granted an explicit Access Level -- confirmed to block both local and HCP Terraform access identically. See known-deviations.md #1/#2/#14/#18. The real DR failover drill (ADR-007) was run against this live instance regardless, since the drill tests replication/promotion mechanics, not network topology.

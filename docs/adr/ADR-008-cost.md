@@ -77,3 +77,9 @@ The model below is **illustrative, not a quoted GCP price** — actual figures d
 - The Medium article's "what I'd do differently" section has a natural, honest answer here: at MedSecure's actual (near-zero) current user count, the fixed DR/security costs are disproportionately expensive relative to revenue — a real trade-off worth naming rather than hiding
 
 **Revisit if:** real usage data eventually shows the sub-linear assumption doesn't hold at the scale MedSecure actually reaches — at that point, the cost model in this document should be replaced with real billing data, not left as illustrative numbers indefinitely.
+
+---
+
+## Implementation Status (updated after real build)
+
+**Live.** Budget and notification channel applied to the billing account. What was initially mis-diagnosed as a "platform limitation" on budget creation turned out to be two distinct, real, fixable issues: a hardcoded USD currency on an INR-denominated billing account, and a missing `roles/billing.admin` grant (`roles/billing.user` does not include budget permissions) -- both found and corrected. See known-deviations.md #10/#12/#23/#24 for the full diagnostic trail.

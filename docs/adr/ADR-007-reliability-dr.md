@@ -87,3 +87,9 @@ DR Replica: medsecure-eu-sql-dr-replica (europe-west4, failover_target=true)
 
 
 
+
+---
+
+## Implementation Status (updated after real build)
+
+**Live**, and the only pillar with a fully executed real drill. The original monitoring design (an uptime check against Cloud SQL) was redesigned after confirming via the live API that Uptime Checks do not support `cloudsql_database` resources -- replaced with an alert policy querying `cloudsql.googleapis.com/database/up` directly. See known-deviations.md #5 for the redesign, and the drill log in `docs/dr-drill/failover-runbook.md` for the real, measured RTO (~3-4 min) and RPO (0) results.
