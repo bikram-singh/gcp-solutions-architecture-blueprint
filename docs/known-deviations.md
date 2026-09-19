@@ -175,3 +175,11 @@ A separate, unrelated, and genuinely fixable issue was also found: pubsub.google
 Migrated cleanly, plan came back "No changes. Your infrastructure matches the configuration." -- zero errors, zero drift requiring action, on the first attempt. The GKE cluster and both Cloud Run services all refreshed correctly through HCP Terraform with no new permission or API gaps.
 
 **Status:** RESOLVED. 3 of 9 workspaces (network, observability, compute) now fully proven via HCP Terraform.
+
+---
+
+## 20. medsecure-ai-ml HCP Terraform test: clean no-op after fixing 2 missing APIs and a stray brace (resolved)
+
+Migration hit a copy-paste artifact (an orphaned extra closing brace from an earlier same-night edit) that had to be manually diagnosed and removed, plus two sequential missing-API errors (iam.googleapis.com, then cloudresourcemanager.googleapis.com) on medsecure-eu-ml-prod for this identity. After fixing all three, plan came back "No changes. Your infrastructure matches the configuration."
+
+**Status:** RESOLVED. 4 of 9 workspaces (network, observability, compute, ai-ml) now fully proven via HCP Terraform.
