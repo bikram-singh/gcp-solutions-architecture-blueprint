@@ -101,3 +101,15 @@ Fixed by changing currency_code to "INR" and monthly_budget_amount_usd's value t
 **Lesson:** deviation #10's original conclusion ("genuine platform limit") was reached after testing amount and thresholds but not currency, and was stated with more confidence than the evidence supported. Correcting the record here rather than leaving the earlier, wrong conclusion standing.
 
 **Status:** RESOLVED. Real budget live: billingAccounts/012E9C-0D5AF1-5575CE/budgets/f3e10844-7db0-4a6c-805e-1658d7b35bcf
+
+---
+
+## 13. CI/CD: HCP Terraform + WIF fully wired and proven (resolved)
+
+All 9 HCP Terraform workspaces (one per module) created, each connected to this repo with the correct working directory and path-scoped run triggers. A dedicated Workload Identity Federation pool/provider (hcp-terraform-pool, scoped to the gcpcloudhub HCP Terraform org via an explicit attribute condition) and a dedicated service account (hcp-tf-deployer@medsecure-network-hub) were created specifically for this -- not reusing the FAST foundation project's existing WIF setup, to keep blast radius scoped to MedSecure projects only.
+
+A real test plan run against medsecure-landing-zone confirmed the full chain works end-to-end: WIF authentication succeeded with zero auth errors, and the plan correctly showed 25 resources to create (expected, since this workspace's HCP Terraform state starts empty -- the real infrastructure was originally applied from a local machine, not through this pipeline). The plan was discarded, not applied, to avoid attempting to recreate already-existing real infrastructure from blank state.
+
+**What remains, if pursued further:** importing local terraform.tfstate into each HCP Terraform workspace (via terraform state push) so each workspace's state matches the real, already-applied infrastructure. This is a distinct follow-up task from proving the auth pipeline works, which is what this deviation entry closes out.
+
+**Status:** RESOLVED. GitHub Environment protection (deviation #11) + working HCP Terraform WIF auth (this entry) together mean the CI/CD pipeline described in ADR-009 is genuinely real, not just YAML describing an intent.
