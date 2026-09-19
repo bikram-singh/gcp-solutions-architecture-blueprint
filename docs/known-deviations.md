@@ -199,3 +199,11 @@ Migrated cleanly with zero errors on the first attempt -- no new API gaps, no pe
 Migrated cleanly with zero errors on the first attempt. Plan came back "No changes. Your infrastructure matches the configuration," confirming the earlier Cloud SQL native-metric redesign (deviation #5) is correctly reflected in real state through HCP Terraform, not just locally.
 
 **Status:** RESOLVED. 6 of 9 workspaces (network, observability, compute, ai-ml, security, reliability) now fully proven via HCP Terraform.
+
+---
+
+## 23. medsecure-cost HCP Terraform test: clean after billing.user grant (resolved)
+
+Hit the same roles/billing.user gap first found in deviation #15/#16 (owner does not include billing-account-level permissions) -- the grant to hcp-tf-deployer had been made during the landing-zone testing but plan still failed here, confirming each workspace needs its own fresh plan to actually exercise a given permission path, not just a one-time org-wide fix. After confirming/re-applying the binding, plan came back clean: 0 to add, 0 to change, 0 to destroy.
+
+**Status:** RESOLVED. All 9 of 9 HCP Terraform workspaces now individually tested. 7 came back completely clean (network, observability, compute, ai-ml, security, reliability, cost); medsecure-landing-zone remains blocked on the pre-existing billing project-link quota (deviation #10/#12), and medsecure-data remains blocked on the VPC-SC perimeter (deviation #14/#18) -- both are real, external, already-documented constraints, not pipeline defects.
