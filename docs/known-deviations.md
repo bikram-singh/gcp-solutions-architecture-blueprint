@@ -48,3 +48,11 @@ The first two GKE Autopilot creation attempts failed with STATUS: ERROR because 
 The google_scc_v2_organization_scc_big_query_exports resource in the security module requires Security Command Center Premium to be actively activated at the org level (a separate, paid activation step beyond just enabling the API), plus a specific SCC admin IAM role. This was not set up as part of this build and was deliberately skipped rather than chasing a new paid-tier activation. The resource is commented out in terraform/security/main.tf.
 
 **Status:** Deliberately out of scope for this session.
+
+---
+
+## 8. Incident: security module briefly renamed the shared org access policy
+
+Applying the security module imported the existing org-level Access Policy (accessPolicies/731858017875, title "gch-access-policy", owned by the separate FAST foundation project) rather than creating a duplicate, since access policies are singleton per organization. The import was correct, but main.tf still specified this module's own intended title ("medsecure-access-policy"), so the same apply that imported the policy also renamed it -- unintentionally overwriting a title used by another real project. Caught and reverted within the same session via `gcloud access-context-manager policies update --title=gch-access-policy`. No other properties of the policy were affected, and IDs (which other integrations would reference, not titles) never changed. main.tf now explicitly sets title to match the existing policy's real name, with a comment explaining this module does not own or rename it.
+
+**Status:** Resolved. Verify no other artifact (dashboards, docs, screenshots) in the FAST foundation project captured the temporary renamed state.
