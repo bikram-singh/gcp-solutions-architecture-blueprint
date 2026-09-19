@@ -183,3 +183,11 @@ Migrated cleanly, plan came back "No changes. Your infrastructure matches the co
 Migration hit a copy-paste artifact (an orphaned extra closing brace from an earlier same-night edit) that had to be manually diagnosed and removed, plus two sequential missing-API errors (iam.googleapis.com, then cloudresourcemanager.googleapis.com) on medsecure-eu-ml-prod for this identity. After fixing all three, plan came back "No changes. Your infrastructure matches the configuration."
 
 **Status:** RESOLVED. 4 of 9 workspaces (network, observability, compute, ai-ml) now fully proven via HCP Terraform.
+
+---
+
+## 21. medsecure-security HCP Terraform test: clean no-op (resolved)
+
+Migrated cleanly with zero errors on the first attempt -- no new API gaps, no permission issues. Plan came back "No changes. Your infrastructure matches the configuration," which also confirms the earlier access-policy-rename fix (deviation #8) is durable and correctly reflected in real state.
+
+**Status:** RESOLVED. 5 of 9 workspaces (network, observability, compute, ai-ml, security) now fully proven via HCP Terraform.
