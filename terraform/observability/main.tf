@@ -1,5 +1,12 @@
 ﻿terraform {
   required_version = ">= 1.7.0"
+
+  cloud {
+    organization = "gcpcloudhub"
+    workspaces {
+      name = "medsecure-observability"
+    }
+  }
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -149,3 +156,10 @@ resource "google_monitoring_dashboard" "platform_health_summary" {
 
 
 
+
+
+provider "google" {
+  project                = "medsecure-eu-api-prod"
+  user_project_override  = true
+  billing_project         = "medsecure-eu-api-prod"
+}
