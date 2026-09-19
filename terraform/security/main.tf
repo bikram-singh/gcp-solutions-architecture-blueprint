@@ -17,7 +17,7 @@
 # --- One org-level access policy (required once per org for VPC-SC) --------
 resource "google_access_context_manager_access_policy" "medsecure" {
   parent = "organizations/${var.org_id}"
-  title  = "medsecure-access-policy"
+  title  = "gch-access-policy" # existing org-level policy shared with the FAST foundation project -- this module does not own or rename it, see known-deviations.md
 }
 
 # --- One perimeter per region -- deliberately NOT one global perimeter,
@@ -65,4 +65,5 @@ provider "google" {
   user_project_override  = true
   billing_project         = "medsecure-eu-data-prod"
 }
+
 
