@@ -1,4 +1,4 @@
-# MedSecure: Scenario & Non-Functional Requirements
+﻿# MedSecure: Scenario & Non-Functional Requirements
 
 This document is the single source of truth for the case study every ADR in this repo is built against. Every architectural decision traces back to one or more of the requirements below — if a decision in an ADR doesn't obviously serve one of these, that's worth questioning.
 
@@ -62,3 +62,4 @@ To keep this a focused case study rather than an unbounded green-field build:
 ## How this maps to the real build
 
 Every one of these NFRs now has a real answer, not just a design intention — see the "Implementation Status" section at the bottom of each ADR in [`docs/adr/`](adr/), and the full real-world build log in [`docs/known-deviations.md`](known-deviations.md).
+

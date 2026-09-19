@@ -1,579 +1,184 @@
-# 🔍 Automated GCP Cost Anomaly Report
+# GCP Solutions Architecture Blueprint
 
-![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![GCP](https://img.shields.io/badge/GCP-BigQuery-orange.svg)
-![GitHub Actions](https://img.shields.io/badge/CI-GitHub%20Actions-green.svg)
+**MedSecure** — a reference architecture for a multi-region healthcare SaaS platform on Google Cloud, built to demonstrate solutions-architecture-level decision-making, not just infrastructure delivery.
 
-An intelligent, automated system that monitors Google Cloud Platform (GCP) billing data to detect cost anomalies and send real-time alerts via Slack and GitHub Issues. This solution helps organizations proactively manage cloud costs by identifying unexpected spending patterns before they become expensive problems.
+![Terraform](https://img.shields.io/badge/Terraform-1.7%2B-623CE4?logo=terraform&logoColor=white)
+![GCP](https://img.shields.io/badge/GCP-Live%20Infrastructure-4285F4?logo=googlecloud&logoColor=white)
+![HCP Terraform](https://img.shields.io/badge/HCP%20Terraform-Wired%20%26%20Proven-7B42BC?logo=terraform&logoColor=white)
+![GitHub Actions](https://img.shields.io/badge/CI%2FCD-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
+![Pillars Live](https://img.shields.io/badge/pillars%20live-10%2F10-brightgreen)
+![Deviations Documented](https://img.shields.io/badge/deviations%20documented-24-blue)
 
-## 📑 Table of Contents
-
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Features](#features)
-- [How It Works](#how-it-works)
-- [Prerequisites](#prerequisites)
-- [Setup Guide](#setup-guide)
-  - [1. GCP Billing Export Configuration](#1-gcp-billing-export-configuration)
-  - [2. Service Account Setup](#2-service-account-setup)
-  - [3. GitHub Secrets Configuration](#3-github-secrets-configuration)
-  - [4. Workflow Configuration](#4-workflow-configuration)
-- [Configuration Parameters](#configuration-parameters)
-- [Anomaly Detection Algorithm](#anomaly-detection-algorithm)
-- [Notification Channels](#notification-channels)
-- [Usage](#usage)
-- [Tuning and Optimization](#tuning-and-optimization)
-- [Troubleshooting](#troubleshooting)
-- [Project Structure](#project-structure)
-- [Contributing](#contributing)
-- [License](#license)
-
-## 🎯 Overview
-
-The Automated GCP Cost Anomaly Report is a serverless monitoring solution that:
-
-- **Automatically analyzes** daily GCP billing data exported to BigQuery
-- **Detects anomalies** by comparing current costs against historical baselines
-- **Alerts teams** via Slack webhooks and GitHub Issues when unusual spending is detected
-- **Runs daily** via GitHub Actions without requiring dedicated infrastructure
-- **Provides actionable insights** with detailed cost breakdowns by GCP service
-
-## 🏗️ Architecture
-
-```mermaid
-graph TB
-    subgraph "GCP Cloud"
-        A[GCP Services] -->|Generate Costs| B[GCP Billing]
-        B -->|Export Daily| C[BigQuery<br/>Billing Table]
-    end
-    
-    subgraph "GitHub Actions"
-        D[Scheduled Cron<br/>Daily 06:00 UTC] -->|Trigger| E[GitHub Actions Workflow]
-        E -->|Authenticate| F[GCP Service Account]
-        F -->|Query| C
-        E -->|Execute| G[Python Script<br/>detect_cost_anomalies.py]
-    end
-    
-    subgraph "Anomaly Detection Logic"
-        G -->|Fetch Data| H[Query Recent Costs<br/>Yesterday]
-        G -->|Fetch Data| I[Query Baseline Costs<br/>Past 7 Days]
-        H --> J[Compare & Analyze]
-        I --> J
-        J -->|Calculate| K{Anomaly<br/>Detected?}
-    end
-    
-    subgraph "Notification System"
-        K -->|Yes| L[Format Alert Message]
-        L --> M[Send to Slack<br/>Webhook]
-        L --> N[Create GitHub Issue<br/>with Details]
-        K -->|No| O[Log: No Anomalies<br/>End Job]
-    end
-    
-    subgraph "Alert Destinations"
-        M --> P[Slack Channel]
-        N --> Q[GitHub Repository Issues]
-    end
-    
-    style A fill:#4285F4
-    style C fill:#669DF6
-    style G fill:#FFA500
-    style K fill:#FF6B6B
-    style P fill:#611F69
-    style Q fill:#24292E
-    style J fill:#90EE90
-```
-
-### Architecture Flow
-
-1. **Data Collection**: GCP automatically exports billing data to BigQuery daily
-2. **Scheduled Execution**: GitHub Actions runs the workflow daily at 06:00 UTC (configurable)
-3. **Authentication**: Workflow authenticates to GCP using service account credentials
-4. **Data Analysis**: Python script queries BigQuery for recent and baseline costs
-5. **Anomaly Detection**: Algorithm compares current costs against historical baseline
-6. **Alert Generation**: If anomalies are detected, formatted messages are sent
-7. **Notification Delivery**: Alerts are posted to Slack and/or GitHub Issues
-
-## ✨ Features
-
-### 🎯 Core Capabilities
-
-- **Automated Daily Monitoring**: Runs automatically via GitHub Actions without manual intervention
-- **Service-Level Analysis**: Breaks down costs by individual GCP services for granular insights
-- **Intelligent Baseline Comparison**: Compares yesterday's costs against a configurable baseline period
-- **Percentage-Based Anomalies**: Detects when costs exceed historical averages by a specified percentage
-- **Absolute Threshold Detection**: Flags new services or zero-baseline scenarios when costs exceed minimum thresholds
-- **Multi-Channel Notifications**: Sends alerts to both Slack and GitHub Issues simultaneously
-
-### 🔧 Technical Features
-
-- **Flexible Authentication**: Supports both Service Account JSON keys and Workload Identity Federation
-- **Configurable Parameters**: All thresholds and baselines are environment-variable driven
-- **Error Handling**: Robust logging and error management for production reliability
-- **Zero Infrastructure**: Runs entirely on GitHub Actions—no servers to maintain
-- **Cost Efficient**: Free tier GitHub Actions usage for most use cases
-
-## 🔄 How It Works
-
-### Daily Execution Flow
-
-1. **Trigger**: GitHub Actions workflow triggers at scheduled time (default: 06:00 UTC)
-2. **Authentication**: Authenticates to GCP using stored service account credentials
-3. **Data Query**: 
-   - Queries BigQuery for yesterday's costs grouped by service
-   - Queries past N days (default: 7) for baseline comparison
-4. **Analysis**:
-   - Calculates average daily cost for each service over baseline period
-   - Compares yesterday's cost to baseline average
-   - Identifies services exceeding threshold percentage
-   - Flags new services with costs above absolute minimum
-5. **Notification**:
-   - Formats detailed anomaly report
-   - Posts to Slack webhook (if configured)
-   - Creates GitHub Issue (if enabled)
-6. **Logging**: Records all activities and results for audit trail
-
-## 📋 Prerequisites
-
-Before setting up this project, ensure you have:
-
-### GCP Requirements
-- ✅ Active GCP project with billing enabled
-- ✅ BigQuery API enabled
-- ✅ Billing export to BigQuery configured
-- ✅ Service account with BigQuery Data Viewer permissions
-- ✅ Service account JSON key (or Workload Identity configured)
-
-### GitHub Requirements
-- ✅ GitHub repository (this repo)
-- ✅ GitHub Actions enabled
-- ✅ Permissions to add repository secrets
-
-### Optional Requirements
-- ✅ Slack workspace with webhook URL (for Slack notifications)
-- ✅ Basic understanding of YAML, Python, and cloud costs
-
-## 🚀 Setup Guide
-
-### 1. GCP Billing Export Configuration
-
-#### Enable Billing Export to BigQuery
-
-1. Navigate to **GCP Console** → **Billing** → **Billing Export**
-2. Click **Edit Settings** for "Detailed usage cost"
-3. Select or create a BigQuery dataset
-4. Enable export and note the table name format:
-   ```
-   project-id.dataset-name.gcp_billing_export_v1_XXXXXX_XXXXXX_XXXXXX
-   ```
-5. Wait 24 hours for initial data population
-
-### 2. Service Account Setup
-
-#### Create Service Account
-
-```bash
-# Set variables
-export PROJECT_ID="your-project-id"
-export SA_NAME="cost-anomaly-detector"
-
-# Create service account
-gcloud iam service-accounts create $SA_NAME \
-    --description="Service account for cost anomaly detection" \
-    --display-name="Cost Anomaly Detector"
-
-# Grant BigQuery Data Viewer role
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
-    --role="roles/bigquery.dataViewer"
-
-# Grant BigQuery Job User role (to run queries)
-gcloud projects add-iam-policy-binding $PROJECT_ID \
-    --member="serviceAccount:$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com" \
-    --role="roles/bigquery.jobUser"
-
-# Create and download key
-gcloud iam service-accounts keys create key.json \
-    --iam-account=$SA_NAME@$PROJECT_ID.iam.gserviceaccount.com
-```
-
-#### Alternative: Workload Identity Federation (Recommended)
-
-For enhanced security, configure Workload Identity Federation instead of using service account keys. See [GCP Workload Identity Documentation](https://cloud.google.com/iam/docs/workload-identity-federation).
-
-### 3. GitHub Secrets Configuration
-
-Add the following secrets to your GitHub repository:
-
-#### Navigate to Repository Settings
-`Settings` → `Secrets and variables` → `Actions` → `New repository secret`
-
-#### Required Secrets
-
-| Secret Name | Description | Example |
-|------------|-------------|---------|
-| `GCP_SERVICE_ACCOUNT_KEY` | Entire contents of `key.json` file | `{ "type": "service_account", ... }` |
-
-#### Optional Secrets
-
-| Secret Name | Description | Required For |
-|------------|-------------|--------------|
-| `SLACK_WEBHOOK_URL` | Slack incoming webhook URL | Slack notifications |
-
-**Note**: `GITHUB_TOKEN` is automatically provided by GitHub Actions.
-
-### 4. Workflow Configuration
-
-Edit [.github/workflows/detect-cost-anomalies.yml](.github/workflows/detect-cost-anomalies.yml):
-
-```yaml
-- name: Run anomaly detection
-  env:
-    BILLING_TABLE: "your-project.your_dataset.gcp_billing_export_v1_XXXXXX_XXXXXX_XXXXXX"  # UPDATE THIS
-    THRESHOLD_PERCENT: "30"
-    BASELINE_DAYS: "7"
-    MIN_ABSOLUTE_INCREASE: "5.0"
-    # ... other settings
-```
-
-**Important**: Update `BILLING_TABLE` with your actual BigQuery billing table name.
-
-## ⚙️ Configuration Parameters
-
-All configuration is managed via environment variables in the workflow file:
-
-| Parameter | Default | Description |
-|-----------|---------|-------------|
-| `BILLING_TABLE` | **Required** | Full BigQuery table path: `project.dataset.table` |
-| `THRESHOLD_PERCENT` | `30` | Percentage increase to trigger anomaly (e.g., 30 = 30%) |
-| `BASELINE_DAYS` | `7` | Number of days to use for baseline average calculation |
-| `MIN_ABSOLUTE_INCREASE` | `5.0` | Minimum dollar amount to trigger anomaly for new services (USD) |
-| `SLACK_WEBHOOK_URL` | Optional | Slack webhook URL for notifications |
-| `CREATE_GITHUB_ISSUE` | `false` | Set to `"true"` to create GitHub issues for anomalies |
-| `GITHUB_TOKEN` | Auto | Automatically provided by GitHub Actions |
-| `GITHUB_REPOSITORY` | Auto | Automatically set to `owner/repo` format |
-
-## 🧮 Anomaly Detection Algorithm
-
-The system uses a two-pronged approach to detect cost anomalies:
-
-### 1. Percentage-Based Detection (Established Services)
-
-For services with historical baseline data:
-
-```
-Baseline Average = Total Cost (Past N Days) / N Days
-Percentage Change = ((Yesterday's Cost - Baseline Average) / Baseline Average) × 100
-
-IF Percentage Change > THRESHOLD_PERCENT:
-    → Anomaly Detected
-```
-
-**Example**:
-- Baseline average: $100/day over 7 days
-- Yesterday's cost: $150
-- Percentage change: 50%
-- Threshold: 30%
-- **Result**: ✅ Anomaly (50% > 30%)
-
-### 2. Absolute Threshold Detection (New Services)
-
-For new services with zero or minimal baseline:
-
-```
-IF Baseline Average ≤ 0 AND Yesterday's Cost ≥ MIN_ABSOLUTE_INCREASE:
-    → Anomaly Detected
-```
-
-**Example**:
-- New service with no historical usage
-- Yesterday's cost: $25
-- Minimum threshold: $5
-- **Result**: ✅ Anomaly (new service with significant cost)
-
-### Query Logic
-
-The script executes two BigQuery queries:
-
-#### Baseline Query
-```sql
-SELECT service.description AS service, SUM(cost) AS baseline_total
-FROM `project.dataset.billing_table`
-WHERE DATE(usage_start_time) >= DATE('start_date')
-  AND DATE(usage_start_time) < DATE('yesterday')
-GROUP BY service
-```
-
-#### Recent Query
-```sql
-SELECT service.description AS service, SUM(cost) AS recent_cost
-FROM `project.dataset.billing_table`
-WHERE DATE(usage_start_time) = DATE('yesterday')
-GROUP BY service
-```
-
-## 📢 Notification Channels
-
-### Slack Notifications
-
-When anomalies are detected, Slack receives a formatted message:
-
-```
-*GCP Cost Anomalies for 2024-12-20* — 3 found
-
-*Service:* Compute Engine
-  - Recent: $250.00
-  - Baseline avg/day: $150.00
-  - Change: 66.7%
-  - Note: >30%
-
-*Service:* Cloud Storage
-  - Recent: $75.00
-  - Baseline avg/day: $50.00
-  - Change: 50.0%
-  - Note: >30%
-
-*Service:* Cloud Run
-  - Recent: $30.00
-  - Baseline avg/day: $0.00
-  - Change: N/A
-  - Note: no baseline; recent >= $5.00
-```
-
-### GitHub Issues
-
-When `CREATE_GITHUB_ISSUE: "true"`, the system creates an issue:
-
-**Title**: `[Cost Anomaly] 3 anomaly(s) on 2024-12-20`
-
-**Body**: Same formatted message as Slack + "Detected by automated job."
-
-**Labels**: Can be configured (requires additional workflow customization)
-
-## 📖 Usage
-
-### Manual Trigger
-
-Run the workflow manually for testing:
-
-1. Go to **Actions** tab in your repository
-2. Select "Automated GCP Cost Anomaly Report" workflow
-3. Click **Run workflow** → **Run workflow**
-4. Monitor execution in real-time
-
-### Scheduled Execution
-
-The workflow runs automatically daily at 06:00 UTC. To change the schedule:
-
-```yaml
-on:
-  schedule:
-    - cron: "0 14 * * *"   # 14:00 UTC (2:00 PM UTC)
-```
-
-Use [crontab.guru](https://crontab.guru/) to generate cron expressions.
-
-### Local Testing
-
-Test the script locally before deploying:
-
-```bash
-# Set up environment
-export BILLING_TABLE="your-project.dataset.table"
-export THRESHOLD_PERCENT="30"
-export BASELINE_DAYS="7"
-export MIN_ABSOLUTE_INCREASE="5.0"
-export GOOGLE_APPLICATION_CREDENTIALS="path/to/key.json"
-
-# Optional
-export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
-export CREATE_GITHUB_ISSUE="false"
-
-# Install dependencies
-pip install -r requirements.txt
-
-# Run script
-python src/detect_cost_anomalies.py
-```
-
-## 🎛️ Tuning and Optimization
-
-### Adjusting Sensitivity
-
-**Too many false positives?** Increase thresholds:
-```yaml
-THRESHOLD_PERCENT: "50"          # Increase from 30% to 50%
-MIN_ABSOLUTE_INCREASE: "10.0"    # Increase from $5 to $10
-```
-
-**Missing real anomalies?** Decrease thresholds:
-```yaml
-THRESHOLD_PERCENT: "20"          # Decrease to 20%
-MIN_ABSOLUTE_INCREASE: "2.0"     # Decrease to $2
-BASELINE_DAYS: "14"              # Increase baseline to 14 days for smoother average
-```
-
-### Environment-Specific Settings
-
-**Development/Test Environment** (lower costs, higher volatility):
-```yaml
-THRESHOLD_PERCENT: "100"         # 100% increase required
-MIN_ABSOLUTE_INCREASE: "1.0"     # Flag anything over $1
-BASELINE_DAYS: "3"               # Shorter baseline due to frequent changes
-```
-
-**Production Environment** (higher costs, more stable):
-```yaml
-THRESHOLD_PERCENT: "20"          # Sensitive to 20% increases
-MIN_ABSOLUTE_INCREASE: "50.0"    # Only flag significant new costs
-BASELINE_DAYS: "14"              # Longer baseline for stability
-```
-
-### Seasonal Adjustments
-
-For businesses with seasonal patterns:
-- Increase `BASELINE_DAYS` to 14-30 days to smooth out weekly patterns
-- Consider implementing custom baseline logic (requires code modification)
-- Use different thresholds during peak vs. off-peak seasons
-
-## 🔧 Troubleshooting
-
-### Common Issues
-
-#### Issue: "BILLING_TABLE environment variable is required"
-**Solution**: Ensure `BILLING_TABLE` is set in workflow file:
-```yaml
-env:
-  BILLING_TABLE: "project.dataset.table"
-```
-
-#### Issue: "Permission denied" or "Access Denied"
-**Solution**: Verify service account has required roles:
-- `roles/bigquery.dataViewer`
-- `roles/bigquery.jobUser`
-
-#### Issue: "Table not found"
-**Solution**: 
-1. Verify billing export is enabled and data is populated (wait 24 hours after enabling)
-2. Check table name format in BigQuery console
-3. Ensure correct project/dataset/table in `BILLING_TABLE`
-
-#### Issue: "No anomalies detected" (but you expect some)
-**Solution**:
-1. Check if billing data is available for yesterday
-2. Lower `THRESHOLD_PERCENT` temporarily to verify detection logic
-3. Review logs in GitHub Actions for query results
-4. Manually query BigQuery to verify data exists
-
-#### Issue: Slack notifications not working
-**Solution**:
-1. Verify `SLACK_WEBHOOK_URL` secret is correctly set
-2. Test webhook URL manually:
-   ```bash
-   curl -X POST -H 'Content-type: application/json' \
-     --data '{"text":"Test message"}' \
-     YOUR_WEBHOOK_URL
-   ```
-3. Check workflow logs for error messages
-
-#### Issue: GitHub Issues not being created
-**Solution**:
-1. Ensure `CREATE_GITHUB_ISSUE: "true"` in workflow
-2. Verify workflow has `issues: write` permission
-3. Check if repository allows issue creation
-
-### Debug Mode
-
-Enable detailed logging by modifying [src/detect_cost_anomalies.py](src/detect_cost_anomalies.py):
-
-```python
-logging.basicConfig(level=logging.DEBUG, format="%(asctime)s %(levelname)s %(message)s")
-```
-
-### Viewing Logs
-
-1. Go to **Actions** tab
-2. Click on latest workflow run
-3. Click on **detect-cost-anomalies** job
-4. Expand **Run anomaly detection** step
-5. Review output for errors or unexpected behavior
-
-## 📁 Project Structure
-
-```
-Automated-GCP-Cost-Anomaly-Report/
-├── .github/
-│   └── workflows/
-│       └── detect-cost-anomalies.yml    # GitHub Actions workflow definition
-├── src/
-│   └── detect_cost_anomalies.py         # Main Python script for anomaly detection
-├── requirements.txt                      # Python dependencies
-└── README.md                            # This file
-```
-
-### File Descriptions
-
-- **`.github/workflows/detect-cost-anomalies.yml`**: Defines the GitHub Actions workflow, including schedule, authentication, and environment variables
-- **`src/detect_cost_anomalies.py`**: Core Python script containing:
-  - BigQuery query logic
-  - Anomaly detection algorithm
-  - Slack notification handler
-  - GitHub issue creation handler
-  - Configuration management
-- **`requirements.txt`**: Python package dependencies:
-  - `google-cloud-bigquery`: GCP BigQuery client library
-  - `requests`: HTTP library for webhooks
-  - `pandas`: Data manipulation (if needed)
-  - `numpy`: Numerical operations (if needed)
-
-## 🤝 Contributing
-
-Contributions are welcome! Here's how you can help:
-
-### Reporting Issues
-
-1. Check existing issues to avoid duplicates
-2. Provide detailed description with:
-   - Environment details (GCP project setup, GitHub Actions logs)
-   - Steps to reproduce
-   - Expected vs. actual behavior
-   - Error messages or logs
-
-### Submitting Pull Requests
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Make your changes with clear commit messages
-4. Test thoroughly (local execution + GitHub Actions)
-5. Update documentation if needed
-6. Submit pull request with detailed description
-
-### Ideas for Contributions
-
-- 🎨 Enhanced visualization of cost trends
-- 📊 Integration with additional notification channels (Teams, PagerDuty, etc.)
-- 🧠 Machine learning-based anomaly detection
-- 📈 Historical trend analysis and reporting
-- 🔄 Support for multi-project billing aggregation
-- 🌍 Multi-cloud support (AWS, Azure)
-- 🎯 Cost optimization recommendations
-
-## 📄 License
-
-This project is open source and available under the [MIT License](LICENSE).
-
-## 🙏 Acknowledgments
-
-- Built with ❤️ for FinOps and cloud cost optimization
-- Powered by Google Cloud Platform, GitHub Actions, and Python
-- Inspired by the need for proactive cloud cost management
-
-## 📞 Support
-
-For questions, issues, or feature requests:
-- 📝 Open an issue in this repository
-- 💬 Join discussions in the Issues tab
-- 📧 Contact the maintainers
+> Companion article: *["From Runbooks to Architecture Decision Records: Becoming a GCP Solutions Architect"](#)* (link once published)
 
 ---
 
-**Happy Cost Monitoring! 💰📊**
+## Why this repo exists
+
+A DevOps engineer proves they can build and operate what someone else designed. A Solutions Architect proves they can *decide* — weigh trade-offs, justify a pattern over its alternatives, and defend that decision against cost, security, reliability, and compliance pressure simultaneously.
+
+This repo is that proof, structured as a single case study rather than a grab-bag of demos. Every architectural choice is traceable to a stated requirement and recorded as a formal decision, not just implemented.
+
+It's also, deliberately, not a sanitized demo. Every module here was applied to a **real, live GCP organization** — not just written and left as `terraform plan`-clean theory. That meant hitting real API quirks, real IAM permission boundaries, real billing constraints, and even one real accidental-destroy incident along the way. Rather than hide any of that, it's all recorded in [`docs/known-deviations.md`](docs/known-deviations.md) — **24 entries**, most resolved with a genuine root cause found, a few left open with a precise, honest explanation of why. A reviewer can see not just the design, but exactly how it held up against a real cloud environment.
+
+---
+
+## The scenario
+
+**MedSecure** ingests patient-consented wearable telemetry, stores and analyzes it, and exposes a portal + APIs to partner clinics.
+
+**Non-functional requirements driving every decision below:**
+
+| Requirement | Target |
+|---|---|
+| API tier availability | 99.95% |
+| Recovery Point Objective | ≤ 15 min |
+| Recovery Time Objective | ≤ 1 hr |
+| Data residency | EU and US customer data must not cross region |
+| Compliance | HIPAA-aligned controls (encryption, audit logging, least privilege) |
+| Elasticity | Absorb 10x seasonal traffic spikes without manual intervention |
+| Cost | Infra cost scales sub-linearly with user growth |
+
+Full detail: [`docs/01-scenario-and-nfrs.md`](docs/01-scenario-and-nfrs.md)
+
+---
+
+## Architecture at a glance
+
+Structured around Google's six **Well-Architected Framework** pillars — see [`docs/02-well-architected-mapping.md`](docs/02-well-architected-mapping.md) for the full mapping.
+
+| # | Pillar | ADR | Terraform | Status |
+|---|---|---|---|---|
+| 1 | Landing Zone & Resource Hierarchy | [ADR-001](docs/adr/ADR-001-landing-zone.md) | [`terraform/landing-zone`](terraform/landing-zone) | 🟢 **Live** — 8 folders, 4 org policies, 14 projects |
+| 2 | Network Architecture | [ADR-002](docs/adr/ADR-002-network.md) | [`terraform/network`](terraform/network) | 🟢 **Live** — NCC hub, Shared VPC, Cloud Armor, PSA peering |
+| 3 | Compute & Modernization | [ADR-003](docs/adr/ADR-003-compute.md) | [`terraform/compute`](terraform/compute) | 🟢 **Live** — GKE Autopilot (private nodes), 2 Cloud Run services |
+| 4 | Data & Analytics | [ADR-004](docs/adr/ADR-004-data.md) | [`terraform/data`](terraform/data) | 🟢 **Live** — Cloud SQL, BigQuery, Pub/Sub, Dataplex + real, drilled DR |
+| 5 | AI/ML Layer | [ADR-005](docs/adr/ADR-005-ai-ml.md) | [`terraform/ai-ml`](terraform/ai-ml) | 🟢 **Live** — Vertex AI endpoint, Cloud Run agent |
+| 6 | Security & Compliance | [ADR-006](docs/adr/ADR-006-security.md) | [`terraform/security`](terraform/security) | 🟢 **Live** — VPC-SC perimeter, CMEK |
+| 7 | Reliability & Disaster Recovery | [ADR-007](docs/adr/ADR-007-reliability-dr.md) | [`terraform/reliability`](terraform/reliability) | 🟢 **Live** — redesigned alerting + real drilled failover |
+| 8 | Cost Optimization / FinOps | [ADR-008](docs/adr/ADR-008-cost.md) | [`terraform/cost`](terraform/cost) | 🟢 **Live** — budget + notification channel |
+| 9 | CI/CD & Infrastructure as Code | [ADR-009](docs/adr/ADR-009-cicd.md) | [`.github/workflows`](.github/workflows) + [`terraform/*`](terraform) | 🟢 **Live** — 9 HCP Terraform workspaces, WIF auth, proven applies |
+| 10 | Observability | [ADR-010](docs/adr/ADR-010-observability.md) | [`terraform/observability`](terraform/observability) | 🟢 **Live** — SLO, burn-rate alerts, dashboard |
+
+Each pillar has: an **ADR** (the decision + rejected alternatives, *plus* a real "Implementation Status" section added after the build), a **Terraform module**, and an **architecture diagram**. Every ADR's Implementation Status links back to the specific `known-deviations.md` entries for that pillar, so the design reasoning and the real-world outcome are never disconnected from each other.
+
+---
+
+## Proof, not just claims
+
+This section exists because a reference architecture is only as credible as the evidence behind it. Everything below is a real, reproducible result — not a description of intended behavior.
+
+### A real, measured disaster recovery drill (Pillar 7)
+
+Not a tabletop exercise — an actual `gcloud sql instances promote-replica` run against a live Cloud SQL primary and cross-region replica, with a real test write tracked through the whole process.
+
+| Metric | Target | **Measured** |
+|---|---|---|
+| RTO | ≤ 60 min | **~3–4 min** |
+| RPO | ≤ 15 min | **0** — the test write's timestamp matched exactly, byte-for-byte, after promotion |
+
+Full drill log, including the honest caveat that a single-write test understates RPO risk under sustained load: [`docs/dr-drill/failover-runbook.md`](docs/dr-drill/failover-runbook.md)
+
+### A real, tested CI/CD pipeline (Pillar 9)
+
+All 9 HCP Terraform workspaces were individually tested with a genuine `git push → VCS trigger → plan → human approval → apply` cycle, authenticated via a dedicated Workload Identity Federation pool and service account — no static keys anywhere in the chain.
+
+| Result | Workspaces |
+|---|---|
+| ✅ Fully clean, zero-error applies | `network`, `observability`, `compute`, `ai-ml`, `security`, `reliability`, `cost` |
+| ⚠️ Correctly blocked on real, external, understood constraints | `landing-zone` (billing-account project-link quota — a trial-tier limit, not a bug), `data` (VPC-SC perimeter — confirmed to correctly block *any* unauthorized caller, local or remote, exactly as a security perimeter should) |
+
+The GitHub `production` Environment protection rule (a required human reviewer before any prod apply) is genuinely active — verified directly via the GitHub API, not just described in a workflow YAML file that might not actually be enforced.
+
+### Real incidents, caught and cleanly recovered
+
+Two things went wrong during this build. Both are left in the record rather than edited out, because how a mistake gets caught and fixed says more about engineering judgment than a flawless run would:
+
+- **An accidental `terraform apply` destroy.** Mid-session, a command intended to fix a quota-project setting instead destroyed 14 real GCP projects. Recovered with **zero data loss** using Terraform `import` blocks to reattach state to the recovered (undeleted) resources. This incident is also the direct, stated justification for Pillar 9's mandatory prod-apply human-approval gate — not a theoretical best practice, a lesson learned the hard way in this exact repo.
+- **An unintentional shared-resource rename.** Importing an existing org-level VPC-SC Access Policy (owned by a separate, unrelated live project) briefly overwrote its display title during the same `apply` that correctly imported it. Caught and reverted within the same session, with the fix verified via a follow-up `terraform plan` showing zero drift.
+
+Full details on both, and everything else: [`docs/known-deviations.md`](docs/known-deviations.md) (24 entries total).
+
+---
+
+## Repo structure
+
+```
+.
+├── README.md
+├── docs/
+│   ├── 01-scenario-and-nfrs.md
+│   ├── 02-well-architected-mapping.md
+│   ├── deployed-hierarchy.md        # the REAL, live org structure (redacted IDs)
+│   ├── known-deviations.md          # 24 documented real-world findings & fixes
+│   ├── adr/                         # one ADR per pillar, each with a real Implementation Status
+│   ├── diagrams/                    # whole-platform + per-pillar architecture diagrams
+│   └── dr-drill/
+│       ├── failover-runbook.md      # real, measured RTO/RPO drill results
+│       └── scripts/                 # smoke-test SQL, cutover script
+├── terraform/
+│   ├── landing-zone/
+│   ├── network/
+│   ├── compute/
+│   ├── data/
+│   ├── ai-ml/
+│   ├── security/
+│   ├── reliability/
+│   ├── cost/
+│   └── observability/
+│       # each module has its own README.md with design notes explaining
+│       # WHY the code looks the way it does, not just what it does
+├── .github/
+│   └── workflows/
+│       ├── terraform-plan.yml       # path-filtered plan-on-PR
+│       └── terraform-apply.yml      # auto-apply non-prod, human-gated prod apply
+└── cost-model/
+    └── cost-model.csv               # itemized, ADR-linked cost model
+```
+
+---
+
+## Getting started
+
+Each module can be applied independently, but they have real dependencies on each other's outputs — apply in this order:
+
+```bash
+# 1. Landing zone (no dependencies)
+cd terraform/landing-zone
+cp terraform.tfvars.example terraform.tfvars   # fill in your real org_id, billing_account
+terraform init && terraform plan
+
+# 2. Network (needs landing-zone's project IDs)
+cd ../network
+cp terraform.tfvars.example terraform.tfvars
+terraform init && terraform plan
+
+# 3+ Compute, Data, AI/ML, Security, Reliability, Cost, Observability
+#     each needs the prior modules' real outputs -- see that module's own README.md
+```
+
+**Before applying anything for real, read [`docs/known-deviations.md`](docs/known-deviations.md) first.** It documents nearly every real API quirk, IAM permission gap, and org-policy interaction this build actually hit while applying against a live org — most of the friction you'd otherwise rediscover yourself the hard way is already mapped out there, with the exact fix.
+
+---
+
+## Related deep-dive articles
+
+This project builds directly on prior hands-on work, published separately:
+
+- **Cloud Armor** — WAF/DDoS/rate-limiting lab
+- **Network Connectivity Center** — hub-and-spoke connectivity lab
+- **VPC Service Controls** — the 7-part perimeter lab this repo's Security pillar directly extends, including reusing its existing org-level Access Policy rather than creating a duplicate
+- **Streaming Telemetry Pipeline** — the Pub/Sub → Dataflow → BigQuery pipeline MedSecure's Data pillar design reuses
+- **FAST Foundation** — the GCP landing zone project whose real, pre-existing org resources (network host project, Access Policy) this build deliberately integrated with rather than duplicated
+
+---
+
+## Status
+
+✅ **All 10 pillars have real, applied infrastructure or a fully proven mechanism.** What began as an 8-week phased design roadmap (landing zone → network → security perimeter → compute/data → AI/ML → reliability/DR → cost → documentation) is now substantially complete against a live GCP organization, not just on paper.
+
+Two precisely-scoped items remain open, both understood and documented rather than mysterious:
+- A **VPC Service Controls Access Level** is needed to complete Cloud SQL's cutover to fully private networking (the infrastructure for this — Private Service Access peering — is already live; only the perimeter access grant is missing).
+- A **billing-account quota increase** (a trial-tier project-link limit) is pending approval before `landing-zone`'s full 14-project fleet can be billed and applied end-to-end through the CI/CD pipeline.
+
+Progress and full history tracked via the pillar table above and [`docs/known-deviations.md`](docs/known-deviations.md).

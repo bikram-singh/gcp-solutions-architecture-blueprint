@@ -1,4 +1,4 @@
-# MedSecure: Well-Architected Framework Mapping
+﻿# MedSecure: Well-Architected Framework Mapping
 
 Google Cloud's Well-Architected Framework defines six pillars for evaluating a cloud architecture. This document maps MedSecure's ten build pillars onto those six WAF pillars, so a reviewer familiar with the framework can quickly see where each concern is addressed — and, honestly, where each concern is only partially addressed given this project's real-world constraints.
 
@@ -90,3 +90,4 @@ An honest, self-rated scorecard (1–5, 5 being strongest), per the original pro
 | Sustainability | 2/5 | Present but not a driving design consideration |
 
 This scorecard itself is worth including in the Medium article — an honest self-rating is a stronger credibility signal than an implied claim of doing everything perfectly.
+
