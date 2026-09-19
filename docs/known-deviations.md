@@ -66,3 +66,13 @@ Applying the ai-ml module surfaced three real issues: (1) Cloud Run Admin API no
 Same placeholder-image caveat as the compute module applies here: the deployed Cloud Run "clinician agent" runs Google's public Cloud Run sample image, not the real ADK agent built in the terraform-adk-agent project -- that integration (BigQuery grounding, Gemini 2.5 Flash) is application code not yet wired into this deployment.
 
 **Status:** Resolved / documented limitation on scope.
+
+---
+
+## 10. Cost module: billing budget creation fails on trial billing account (open)
+
+Both terraform apply and a bare gcloud billing budgets create (no filters, no notification channels, minimal args) fail identically with "400: Request contains an invalid argument" against this session's billing account. Since even the minimal gcloud command fails the same way, this is not a Terraform config issue -- it points to a genuine restriction on Cloud Billing Budgets API support for this billing account's tier (a free-trial/self-serve account). The notification channel (google_monitoring_notification_channel.finops_email) IS live and working; only the budget resource itself is blocked.
+
+**Resolution plan:** revisit once the account moves off the trial tier (e.g. after the billing quota increase / account upgrade), or investigate via GCP support if this persists on a paid account.
+
+**Status:** Open -- likely platform limitation, not a config bug.

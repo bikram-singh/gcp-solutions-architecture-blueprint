@@ -1,4 +1,4 @@
-terraform {
+﻿terraform {
   required_version = ">= 1.7.0"
   required_providers {
     google = {
@@ -32,9 +32,7 @@ resource "google_billing_budget" "medsecure_org_budget" {
   display_name    = "medsecure-org-monthly-budget"
 
   budget_filter {
-    projects = [] # empty = org-wide; MedSecure projects are identified by
-                   # the "environment"/"region"/"service" labels from
-                   # ADR-001 if a narrower filter is needed later
+    credit_types_treatment = "INCLUDE_ALL_CREDITS"
   }
 
   amount {
@@ -55,3 +53,11 @@ resource "google_billing_budget" "medsecure_org_budget" {
     monitoring_notification_channels = [google_monitoring_notification_channel.finops_email.id]
   }
 }
+
+provider "google" {
+  project                = "medsecure-logging"
+  user_project_override  = true
+  billing_project         = "medsecure-logging"
+}
+
+
