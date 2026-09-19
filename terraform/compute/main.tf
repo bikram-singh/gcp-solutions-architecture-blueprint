@@ -1,5 +1,12 @@
 ﻿terraform {
   required_version = ">= 1.7.0"
+
+  cloud {
+    organization = "gcpcloudhub"
+    workspaces {
+      name = "medsecure-compute"
+    }
+  }
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -79,3 +86,10 @@ resource "google_service_account" "cloud_run_identity" {
   display_name = "Workload identity for ${each.key} (no long-lived keys)"
 }
 
+
+
+provider "google" {
+  project                = "medsecure-eu-api-prod"
+  user_project_override  = true
+  billing_project         = "medsecure-eu-api-prod"
+}
