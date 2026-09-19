@@ -1,4 +1,4 @@
-terraform {
+﻿terraform {
   required_version = ">= 1.7.0"
   required_providers {
     google = {
@@ -10,10 +10,13 @@ terraform {
 
 # ---------------------------------------------------------------------------
 # ADR-007: Reliability & Disaster Recovery
-# Monitoring and alerting that implements Step 1 ("Detect") of
-# docs/dr-drill/failover-runbook.md. The replica itself is provisioned
-# in terraform/data (ADR-004) -- this module only adds the detection
-# and paging layer the runbook depends on.
+# Alerting that implements Step 1 ("Detect") of the failover runbook.
+#
+# REDESIGN NOTE: the original design used a google_monitoring_uptime_check_config
+# against a cloudsql_database resource, which the Uptime Check API does not
+# support (confirmed against the live API -- see known-deviations.md #5).
+# This version queries Cloud SQL's own native "up" metric directly via an
+# alert policy, with no uptime-check wrapper at all.
 # ---------------------------------------------------------------------------
 
 resource "google_monitoring_notification_channel" "oncall_email" {
@@ -27,29 +30,6 @@ resource "google_monitoring_notification_channel" "oncall_email" {
   }
 }
 
-# Uptime check against the primary Cloud SQL instance -- 3 consecutive
-# failures (15 min at 5-min intervals) is the runbook's deliberate
-# threshold before declaring an incident, avoiding false-positive failover.
-resource "google_monitoring_uptime_check_config" "primary_sql_check" {
-  for_each     = var.regions
-  project      = each.value.project_id
-  display_name = "medsecure-${each.key}-sql-primary-uptime"
-  timeout      = "10s"
-  period       = "300s" # 5 minutes, matching the runbook's threshold math
-
-  monitored_resource {
-    type = "cloudsql_database"
-    labels = {
-      project_id  = each.value.project_id
-      database_id = "${each.value.project_id}:${each.value.primary_instance_id}"
-    }
-  }
-
-  tcp_check {
-    port = 5432
-  }
-}
-
 resource "google_monitoring_alert_policy" "primary_sql_down" {
   for_each     = var.regions
   project      = each.value.project_id
@@ -57,16 +37,16 @@ resource "google_monitoring_alert_policy" "primary_sql_down" {
   combiner     = "OR"
 
   conditions {
-    display_name = "Primary Cloud SQL unreachable (${var.consecutive_failures_before_alert} consecutive checks)"
+    display_name = "Primary Cloud SQL unreachable (3 consecutive checks)"
     condition_threshold {
-      filter          = "resource.type=\"cloudsql_database\" AND metric.type=\"monitoring.googleapis.com/uptime_check/check_passed\" AND resource.label.database_id=\"${each.value.project_id}:${each.value.primary_instance_id}\""
+      filter          = "resource.type=\"cloudsql_database\" AND resource.label.database_id=\"${each.value.project_id}:${each.value.primary_instance_id}\" AND metric.type=\"cloudsql.googleapis.com/database/up\""
       comparison      = "COMPARISON_LT"
       threshold_value = 1
       duration        = "${var.consecutive_failures_before_alert * 300}s"
 
       aggregations {
-        alignment_period  = "300s"
-        per_series_aligner = "ALIGN_FRACTION_TRUE"
+        alignment_period   = "300s"
+        per_series_aligner = "ALIGN_MIN"
       }
     }
   }
@@ -78,3 +58,4 @@ resource "google_monitoring_alert_policy" "primary_sql_down" {
     mime_type = "text/markdown"
   }
 }
+

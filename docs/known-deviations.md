@@ -1,4 +1,4 @@
-
+﻿
 ---
 
 ## 2. Org policy sql.restrictPublicIp disabled on medsecure-eu-data-prod
@@ -31,7 +31,7 @@ The reliability module's `google_monitoring_uptime_check_config` targets a `clou
 
 **Resolution plan:** redesign the alert policy to query `cloudsql.googleapis.com/database/up` directly instead of going through an uptime check, and drop the `google_monitoring_uptime_check_config` resource entirely.
 
-**Status:** Open.
+**Status:** RESOLVED. Module redesigned to query cloudsql.googleapis.com/database/up directly via an alert policy, no uptime-check wrapper. Also required ALIGN_MIN (not ALIGN_FRACTION_TRUE) since this metric is GAUGE/INT64, not boolean. Now live in medsecure-eu-data-prod.
 
 ---
 
@@ -76,3 +76,4 @@ Both terraform apply and a bare gcloud billing budgets create (no filters, no no
 **Resolution plan:** revisit once the account moves off the trial tier (e.g. after the billing quota increase / account upgrade), or investigate via GCP support if this persists on a paid account.
 
 **Status:** Open -- likely platform limitation, not a config bug.
+
