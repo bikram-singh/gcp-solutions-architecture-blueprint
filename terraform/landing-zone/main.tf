@@ -1,5 +1,12 @@
-terraform {
+﻿terraform {
   required_version = ">= 1.7.0"
+
+  cloud {
+    organization = "gcpcloudhub"
+    workspaces {
+      name = "medsecure-landing-zone"
+    }
+  }
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -36,7 +43,7 @@ resource "google_folder" "region" {
 }
 
 # --- Data residency enforcement: org policy per region folder --------------
-# This is the load-bearing control from ADR-001 — residency is enforced
+# This is the load-bearing control from ADR-001 â€” residency is enforced
 # structurally at the folder level, not left to labeling convention.
 resource "google_org_policy_policy" "resource_location" {
   for_each = google_folder.region
@@ -95,9 +102,9 @@ resource "google_project" "service" {
     service     = each.value.service
   }
 }
-
 provider "google" {
-  project                = "gcphub-dev"
+  project                = "medsecure-network-hub"
   user_project_override  = true
-  billing_project         = "gcphub-dev"
+  billing_project         = "medsecure-network-hub"
 }
+
