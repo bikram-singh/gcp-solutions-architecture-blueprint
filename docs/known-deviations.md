@@ -40,3 +40,11 @@ The reliability module's `google_monitoring_uptime_check_config` targets a `clou
 The first two GKE Autopilot creation attempts failed with STATUS: ERROR because the org enforces constraints/compute.vmExternalIpAccess, which blocks external IPs on node VMs. Fixed by adding private_cluster_config (enable_private_nodes=true) to the cluster resource. This is not a workaround -- ADR-002 already specified no public IPs on backend tiers, so this fix brings the implementation in line with the original design rather than deviating from it. Two broken clusters were created and deleted during debugging; no data loss, both were empty clusters with no workloads deployed.
 
 **Status:** Resolved.
+
+---
+
+## 7. SCC BigQuery export skipped (org-level Premium required)
+
+The google_scc_v2_organization_scc_big_query_exports resource in the security module requires Security Command Center Premium to be actively activated at the org level (a separate, paid activation step beyond just enabling the API), plus a specific SCC admin IAM role. This was not set up as part of this build and was deliberately skipped rather than chasing a new paid-tier activation. The resource is commented out in terraform/security/main.tf.
+
+**Status:** Deliberately out of scope for this session.
