@@ -1,5 +1,12 @@
-terraform {
+﻿terraform {
   required_version = ">= 1.7.0"
+
+  cloud {
+    organization = "gcpcloudhub"
+    workspaces {
+      name = "medsecure-ai-ml"
+    }
+  }
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -91,5 +98,8 @@ resource "google_vertex_ai_endpoint" "anomaly_detection" {
 }
 
 provider "google" {
-  region = "europe-west1"
+  project                = "medsecure-eu-ml-prod"
+  region                 = "europe-west1"
+  user_project_override  = true
+  billing_project         = "medsecure-eu-ml-prod"
 }
