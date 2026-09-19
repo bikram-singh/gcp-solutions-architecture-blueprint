@@ -1,5 +1,12 @@
 ﻿terraform {
   required_version = ">= 1.7.0"
+
+  cloud {
+    organization = "gcpcloudhub"
+    workspaces {
+      name = "medsecure-network"
+    }
+  }
   required_providers {
     google = {
       source  = "hashicorp/google"
@@ -174,3 +181,10 @@ resource "google_service_networking_connection" "private_service_connection" {
   service                  = "servicenetworking.googleapis.com"
   reserved_peering_ranges  = [google_compute_global_address.private_service_range[each.key].name]
 }
+
+provider "google" {
+  project                = "medsecure-network-hub"
+  user_project_override  = true
+  billing_project         = "medsecure-network-hub"
+}
+
