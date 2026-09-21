@@ -136,3 +136,112 @@ Two things went wrong during this build. Both are left in the record rather than
 ---
 
 ## 📂 Repo structure
+
+```
+.
+├── README.md
+├── docs/
+│   ├── 01-scenario-and-nfrs.md
+│   ├── 02-well-architected-mapping.md
+│   ├── deployed-hierarchy.md        # real, live org structure
+│   ├── known-deviations.md          # 24 documented real-world findings
+│   ├── adr/                         # 10 ADRs, each with a real Implementation Status
+│   ├── diagrams/                    # architecture diagrams per pillar
+│   └── dr-drill/
+│       ├── failover-runbook.md      # real, measured drill results
+│       └── scripts/
+├── terraform/
+│   ├── landing-zone/
+│   ├── network/
+│   ├── compute/
+│   ├── data/
+│   ├── ai-ml/
+│   ├── security/
+│   ├── reliability/
+│   ├── cost/
+│   └── observability/
+├── .github/workflows/
+│   ├── terraform-plan.yml           # path-filtered plan-on-PR
+│   └── terraform-apply.yml          # auto-apply non-prod, gated prod apply
+└── cost-model/
+    └── cost-model.csv               # itemized, ADR-linked cost model
+```
+
+Each `terraform/<module>/` includes its own `README.md` with design notes explaining *why* the code looks the way it does — not just what it does.
+
+---
+
+## 🚀 Getting started
+
+Each module can be applied independently, but they have real dependencies on each other's outputs — apply in this order:
+
+```bash
+# 1️⃣ Landing zone (no dependencies)
+cd terraform/landing-zone
+cp terraform.tfvars.example terraform.tfvars   # fill in your real org_id, billing_account
+terraform init && terraform plan
+
+# 2️⃣ Network (needs landing-zone's project IDs)
+cd ../network
+cp terraform.tfvars.example terraform.tfvars
+terraform init && terraform plan
+
+# 3️⃣+ Compute, Data, AI/ML, Security, Reliability, Cost, Observability
+#     each needs the prior modules' real outputs -- see that module's own README.md
+```
+
+> ⚠️ **Before applying anything for real, read [`docs/known-deviations.md`](docs/known-deviations.md) first.** It documents nearly every real API quirk, IAM permission gap, and org-policy interaction this build actually hit while applying against a live org — most of the friction you'd otherwise rediscover yourself the hard way is already mapped out there, with the exact fix.
+
+---
+
+## 🔗 Related deep-dive articles
+
+This project builds directly on prior hands-on work, published separately:
+
+- 🛡️ **Cloud Armor** — WAF/DDoS/rate-limiting lab
+- 🌐 **Network Connectivity Center** — hub-and-spoke connectivity lab
+- 🔒 **VPC Service Controls** — the 7-part perimeter lab this repo's Security pillar directly extends, including reusing its existing org-level Access Policy rather than creating a duplicate
+- 📡 **Streaming Telemetry Pipeline** — the Pub/Sub → Dataflow → BigQuery pipeline MedSecure's Data pillar design reuses
+- 🏛️ **FAST Foundation** — the GCP landing zone project whose real, pre-existing org resources (network host project, Access Policy) this build deliberately integrated with rather than duplicated
+
+---
+
+## ✅ Status
+
+**All 10 pillars have real, applied infrastructure or a fully proven mechanism.** What began as an 8-week phased design roadmap (landing zone → network → security perimeter → compute/data → AI/ML → reliability/DR → cost → documentation) is now substantially complete against a live GCP organization, not just on paper.
+
+Two precisely-scoped items remain open, both understood and documented rather than mysterious:
+- 🔓 A **VPC Service Controls Access Level** is needed to complete Cloud SQL's cutover to fully private networking (the infrastructure for this — Private Service Access peering — is already live; only the perimeter access grant is missing).
+- 💳 A **billing-account quota increase** (a trial-tier project-link limit) is pending approval before `landing-zone`'s full 14-project fleet can be billed and applied end-to-end through the CI/CD pipeline.
+
+📘 Progress and full history tracked via the pillar table above and [`docs/known-deviations.md`](docs/known-deviations.md).
+
+---
+
+## 📸 Screenshots — real evidence, not staged demos
+
+Every screenshot below was taken directly from live GCP Console / HCP Terraform pages during this build — nothing is mocked.
+
+### CI/CD pipeline, proven end-to-end
+
+| | |
+|---|---|
+| ![Workspaces overview](docs/snapshots/01-hcp-workspaces-overview.png) All 9 HCP Terraform workspaces | ![Network apply](docs/snapshots/02-hcp-network-apply-success.png) `medsecure-network` — clean, successful apply |
+| ![Observability apply](docs/snapshots/03-hcp-observability-apply-success.png) `medsecure-observability` — clean, successful apply | ![GitHub Environment](docs/snapshots/04-github-production-environment-protection.png) `production` Environment — required reviewer genuinely active |
+| ![Terraform login](docs/snapshots/11-terraform-login-hcp-terraform.png) Real `terraform login` + HCP Terraform state migration | |
+
+### Live infrastructure
+
+| | |
+|---|---|
+| ![GKE healthy](docs/snapshots/05-gke-cluster-healthy.png) `medsecure-prod-eu-api` — GKE Autopilot, healthy | ![Resource hierarchy](docs/snapshots/09-resource-manager-hierarchy.png) Real, live org resource hierarchy |
+| ![Monitoring dashboards](docs/snapshots/07-cloud-monitoring-dashboards-list.png) Cloud Monitoring dashboards, live | ![IAM bindings](docs/snapshots/10-iam-hcp-tf-deployer-bindings.png) `hcp-tf-deployer`'s real IAM role bindings |
+
+### Security & cost — the honest parts
+
+| | |
+|---|---|
+| ![VPC-SC perimeter](docs/snapshots/06-vpc-sc-perimeter-details.png) Live VPC-SC perimeter — enforced, with restricted services listed | ![VPC-SC blocking admin](docs/snapshots/12-vpc-sc-blocking-own-admin-access.png) The perimeter blocking even the org admin's own Console access — proof it works uniformly, not a bug |
+| ![Billing budgets](docs/snapshots/08-billing-budgets-alerts.png) Real budget (₹1,50,000/mo, INR — see the currency-bug fix in `known-deviations.md`) | |
+
+The 12th screenshot (VPC-SC denying the org admin's own access) is deliberately included even though it represents an *open* item — see [`docs/known-deviations.md`](docs/known-deviations.md) #14/#18/#25. It's kept because it's stronger evidence of the security design working correctly than a "success" screenshot would have been.
