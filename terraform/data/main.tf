@@ -55,7 +55,7 @@ resource "google_sql_database_instance" "primary" {
     }
   }
 
-  deletion_protection = true
+  deletion_protection = false
 }
 
 # --- Pub/Sub: wearable telemetry ingestion -----------------------------------
@@ -100,3 +100,4 @@ provider "google" {
   user_project_override  = true
   billing_project         = "medsecure-eu-data-prod"
 }
+

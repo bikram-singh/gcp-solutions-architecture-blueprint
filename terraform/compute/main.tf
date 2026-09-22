@@ -55,7 +55,7 @@ resource "google_container_cluster" "api_cluster" {
     channel = "REGULAR"
   }
 
-  deletion_protection = true
+  deletion_protection = false
 }
 
 # --- Cloud Run services, event-driven tier ----------------------------------
@@ -93,3 +93,4 @@ provider "google" {
   user_project_override  = true
   billing_project         = "medsecure-eu-api-prod"
 }
+
